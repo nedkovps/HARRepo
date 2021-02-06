@@ -1,4 +1,6 @@
 ﻿using HARRepo.FileManager.Logic;
+using HARRepo.FileManager.Logic.Implementations;
+using HARRepo.FileManager.Logic.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,6 +15,8 @@ namespace HARRepo.FileManager.API
         public static void RegisterApiDependencies(this IServiceCollection services, IConfiguration configuration)
         {
             services.RegisterBusinessDependencies(configuration);
+
+            services.AddScoped<IFileManagerLogic, FileManagerLogic>();
         }
     }
 }

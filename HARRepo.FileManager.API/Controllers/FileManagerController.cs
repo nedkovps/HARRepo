@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace HARRepo.FileManager.API.Controllers
 {
+    [Route("api")]
     public class FileManagerController : Controller
     {
         private readonly IFileManagerLogic _fileManager;
