@@ -8,10 +8,11 @@ namespace HARRepo.FileManager.Logic.Interfaces
 {
     public interface IFileManagerLogic
     {
-        Task<DirectoryDTO> GetUserRootDirectoryAsync(int userId);
-
-        Task UploadFile();
-
-        Task UpdateFileLocation(int fileId, int directoryId);
+        Task<IList<RepositoryDTO>> GetUserRepositoriesAsync(int userId);
+        Task<DirectoryDTO> GetRepositoryRootAsync(int repoId);
+        Task<DirectoryDTO> CreateDirectoryAsync(string name, int parentId);
+        Task DeleteDirectoryAsync(int directoryId);
+        Task UpdateFileLocationAsync(int fileId, int directoryId);
+        Task<FileDTO> UploadFileAsync(int directoryId, string name, string content);
     }
 }

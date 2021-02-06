@@ -1,4 +1,6 @@
 ﻿using HARRepo.FileManager.Data;
+using HARRepo.FileManager.Logic.Implementations;
+using HARRepo.FileManager.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,8 @@ namespace HARRepo.FileManager.Logic
         {
             services.AddDbContext<HARRepoFileManagerContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("HARRepoFileManagerContext")));
+
+            services.AddSingleton<IFileStorageLogic, AzureBlobFileStorageLogic>();
         }
     }
 }

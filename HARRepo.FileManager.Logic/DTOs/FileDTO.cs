@@ -4,12 +4,10 @@ using System.Text;
 
 namespace HARRepo.FileManager.Logic.DTOs
 {
-    public class DirectoryDTO : BaseDTO
+    public class FileDTO : BaseDTO
     {
         public string Name { get; set; }
 
-        public List<DirectoryDTO> SubDirectories { get; set; }
-
-        public List<FileDTO> Files { get; set; }
+        public string Path { get; set; }
     }
 }

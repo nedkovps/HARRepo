@@ -1,3 +1,4 @@
+using HARRepo.FileManager.Logic.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,7 +26,11 @@ namespace HARRepo.FileManager.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AzureBlobFileStorageOptions>(options => Configuration.Bind("HARStorage", options));
+
             services.RegisterApiDependencies(Configuration);
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddControllers();
         }

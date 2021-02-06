@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HARRepo.FileManager.Data\HARRepo.FileManager.Data.csproj" />
   </ItemGroup>
 
