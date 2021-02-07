@@ -57,7 +57,8 @@ namespace HARRepo.FileManager.Logic.Implementations
             {
                 UserId = userId,
                 Name = name,
-                RootId = root.Entity.Id
+                RootId = root.Entity.Id,
+                LastActivityOn = DateTime.UtcNow
             });
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();

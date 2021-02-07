@@ -16,6 +16,8 @@ namespace HARRepo.FileManager.API
 {
     public class Startup
     {
+        private readonly string MyAllowSpecificOrigins = "_CORS_Whitelist";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,6 +33,17 @@ namespace HARRepo.FileManager.API
             services.RegisterApiDependencies(Configuration);
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins(Configuration["HarRepoWebUrl"].Split(", ", StringSplitOptions.RemoveEmptyEntries));
+                    builder.WithHeaders("*");
+                    builder.WithMethods("*");
+                });
+            });
 
             services.AddControllers();
         }
@@ -48,6 +61,8 @@ namespace HARRepo.FileManager.API
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseEndpoints(endpoints =>
             {

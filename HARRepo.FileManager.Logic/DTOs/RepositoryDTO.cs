@@ -9,5 +9,7 @@ namespace HARRepo.FileManager.Logic.DTOs
         public string Name { get; set; }
 
         public int RootId { get; set; }
+
+        public DateTime LastActivityOn { get; set; }
     }
 }

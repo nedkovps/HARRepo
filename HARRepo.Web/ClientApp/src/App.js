@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import './custom.css'
+import CreateRepository from './views/CreateRepository';
 import UserRepositories from './views/UserRepositories';
 
 export default class App extends Component {
@@ -11,6 +12,7 @@ export default class App extends Component {
     return (
         <Layout>
             <Route exact path='/' component={UserRepositories} />
+            <Route exact path='/CreateRepo' component={CreateRepository} />
       </Layout>
     );
   }

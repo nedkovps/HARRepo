@@ -4,14 +4,16 @@ using HARRepo.FileManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HARRepo.FileManager.Data.Migrations
 {
     [DbContext(typeof(HARRepoFileManagerContext))]
-    partial class HARRepoFileManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20210207160709_AddLastActivityToRepo")]
+    partial class AddLastActivityToRepo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

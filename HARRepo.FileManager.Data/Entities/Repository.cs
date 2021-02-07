@@ -13,5 +13,7 @@ namespace HARRepo.FileManager.Data.Entities
 
         public int RootId { get; set; }
         public virtual Directory Root { get; private set; }
+
+        public DateTime LastActivityOn { get; set; }
     }
 }
