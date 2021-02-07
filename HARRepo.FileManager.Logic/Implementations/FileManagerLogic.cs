@@ -45,6 +45,25 @@ namespace HARRepo.FileManager.Logic.Implementations
             return _mapper.Map<DirectoryDTO>(root);
         }
 
+        public async Task<DirectoryDTO> CreateRepositoryAsync(int userId, string name)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            var root  = await _context.AddAsync(new Directory()
+            {
+                Name = "Root"
+            });
+            await _context.SaveChangesAsync();
+            var repo = await _context.AddAsync(new Repository()
+            {
+                UserId = userId,
+                Name = name,
+                RootId = root.Entity.Id
+            });
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return _mapper.Map<DirectoryDTO>(root);
+        }
+
         public async Task<DirectoryDTO> CreateDirectoryAsync(string name, int parentId)
         {
             var newDirectory = await _context.AddAsync(new Directory() 

@@ -32,6 +32,13 @@ namespace HARRepo.FileManager.API.Controllers
             return Ok(root);
         }
 
+        [HttpPost("users/{userId}/repositories")]
+        public async Task<ActionResult> CreateRepository(int userId, string name)
+        {
+            var repoRoot = await _fileManager.CreateRepositoryAsync(userId, name);
+            return Ok(repoRoot);
+        }
+
         [HttpPost("directories")]
         public async Task<ActionResult> CreateDirectory(string name, int parentId)
         {
