@@ -26,10 +26,10 @@ namespace HARRepo.FileManager.API.Controllers
         }
 
         [HttpGet("repositories/{repoId}")]
-        public async Task<ActionResult> GetRepositoryRoot(int repoId)
+        public async Task<ActionResult> GetRepository(int repoId)
         {
-            var root = await _fileManager.GetRepositoryRootAsync(repoId);
-            return Ok(root);
+            var repo = await _fileManager.GetRepositoryAsync(repoId);
+            return Ok(repo);
         }
 
         [HttpPost("users/{userId}/repositories")]

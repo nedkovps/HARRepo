@@ -12,6 +12,9 @@ namespace HARRepo.FileManager.Logic.Mappings
         {
             CreateMap<Repository, RepositoryDTO>()
                 .IncludeBase<BaseEntity, BaseDTO>();
+
+            CreateMap<Repository, RepositoryDetailsDTO>()
+                .IncludeBase<Repository, RepositoryDTO>();
         }
     }
 }

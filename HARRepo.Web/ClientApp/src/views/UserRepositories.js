@@ -28,7 +28,7 @@ const UserRepositories = props => {
     }, []);
 
     const viewRepo = repoId => {
-        props.history.push(`/Repositories/${repoId}`);
+        props.history.push(`/Repos/${repoId}`);
     }
 
     const deleteRepo = repoId => {

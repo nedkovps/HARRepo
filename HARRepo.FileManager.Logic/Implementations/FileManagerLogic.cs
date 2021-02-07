@@ -35,14 +35,14 @@ namespace HARRepo.FileManager.Logic.Implementations
             return userRepos;
         }
 
-        public async Task<DirectoryDTO> GetRepositoryRootAsync(int repoId)
+        public async Task<RepositoryDetailsDTO> GetRepositoryAsync(int repoId)
         {
-            var root = await _context.Set<Repository>()
+            var repo = await _context.Set<Repository>()
                 .Where(x => x.Id == repoId)
-                .Select(x => x.Root)
+                .ProjectTo<RepositoryDetailsDTO>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
 
-            return _mapper.Map<DirectoryDTO>(root);
+            return repo;
         }
 
         public async Task<DirectoryDTO> CreateRepositoryAsync(int userId, string name)

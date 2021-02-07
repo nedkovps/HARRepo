@@ -3,6 +3,7 @@ import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import './custom.css'
 import CreateRepository from './views/CreateRepository';
+import Repository from './views/Repository';
 import UserRepositories from './views/UserRepositories';
 
 export default class App extends Component {
@@ -13,6 +14,7 @@ export default class App extends Component {
         <Layout>
             <Route exact path='/' component={UserRepositories} />
             <Route exact path='/CreateRepo' component={CreateRepository} />
+            <Route path='/Repos/:id' component={Repository} />
       </Layout>
     );
   }
