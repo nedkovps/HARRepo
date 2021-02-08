@@ -12,6 +12,7 @@ const Repository = props => {
         data: null
     };
     const [model, setModel] = useState(modelTemplate);
+    const [repoUpdates, setRepoUpdates] = useState({ updates: 0, expandedKeys: {} });
 
     const loadRepository = useCallback(async () => {
         const response = await fetch(`https://localhost:44363/api/repositories/${id}`);
@@ -21,12 +22,16 @@ const Repository = props => {
 
     useEffect(() => {
         loadRepository();
-    }, [loadRepository]);
+    }, [loadRepository, repoUpdates.updates]);
+
+    const repoUpdatedHandler = expandedKeys => {
+        setRepoUpdates({ updates: repoUpdates.updates + 1, expandedKeys: expandedKeys });
+    }
 
     return <ShadowBlock>
         <PageHeader title={`Repository Details ${!model.isLoading && model.data ? `(${model.data.name})` : ''}`} />
         {model.isLoading && <Loader />}
-        {!model.isLoading && model.data && <RepositoryFileManager root={model.data.root} />}
+        {!model.isLoading && model.data && <RepositoryFileManager expandedKeys={repoUpdates.expandedKeys} root={model.data.root} repoUpdated={repoUpdatedHandler} />}
     </ShadowBlock>;
 }
 

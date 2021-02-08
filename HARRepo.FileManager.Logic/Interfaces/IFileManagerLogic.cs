@@ -15,5 +15,6 @@ namespace HARRepo.FileManager.Logic.Interfaces
         Task DeleteDirectoryAsync(int directoryId);
         Task UpdateFileLocationAsync(int fileId, int directoryId);
         Task<FileDTO> UploadFileAsync(int directoryId, string name, string content);
+        Task DeleteFileAsync(int fileId);
     }
 }

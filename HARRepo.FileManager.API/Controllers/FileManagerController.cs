@@ -61,10 +61,17 @@ namespace HARRepo.FileManager.API.Controllers
         }
 
         [HttpPost("files")]
-        public async Task<ActionResult> UploadFile(FileUploadModel model)
+        public async Task<ActionResult> UploadFile([FromBody]FileUploadModel model)
         {
             var file = await _fileManager.UploadFileAsync(model.DirectoryId, model.Name, model.Content);
             return Ok(file);
+        }
+
+        [HttpDelete("files/{fileId}")]
+        public async Task<ActionResult> DeleteFileAsync(int fileId)
+        {
+            await _fileManager.DeleteFileAsync(fileId);
+            return Ok();
         }
     }
 }

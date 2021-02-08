@@ -27,6 +27,7 @@ namespace HARRepo.FileManager.Logic.Implementations
             using var writer = new StreamWriter(stream);
             writer.Write(content);
             writer.Flush();
+            stream.Position = 0;
 
             var name = Guid.NewGuid().ToString();
             await _client.UploadBlobAsync(name, stream);

@@ -38,11 +38,49 @@ namespace HARRepo.FileManager.Logic.Implementations
         public async Task<RepositoryDetailsDTO> GetRepositoryAsync(int repoId)
         {
             var repo = await _context.Set<Repository>()
-                .Where(x => x.Id == repoId)
-                .ProjectTo<RepositoryDetailsDTO>(_mapper.ConfigurationProvider)
-                .SingleOrDefaultAsync();
+                .FindAsync(repoId);
+            var root = await _context.Set<Directory>()
+                .FindAsync(repo.RootId);
 
-            return repo;
+            return new RepositoryDetailsDTO()
+            {
+                Id = repo.Id,
+                Name = repo.Name,
+                RootId = repo.RootId,
+                Root = await FillDirectoryChildrenAsync(new DirectoryDTO() 
+                { 
+                    Id = root.Id,
+                    Name = root.Name
+                })
+            };
+        }
+
+        private async Task<DirectoryDTO> FillDirectoryChildrenAsync(DirectoryDTO root)
+        {
+            var children = await _context.Set<Directory>()
+                .Where(x => x.ParentId == root.Id)
+                .ToListAsync();
+            var files = await _context.Set<File>()
+                .Where(x => x.DirectoryId == root.Id)
+                .ToListAsync();
+
+            var childrenDtos = children.Count > 0 ?
+                children.Select(x => 
+                {
+                    var childDto = new DirectoryDTO()
+                    {
+                        Id = x.Id,
+                        Name = x.Name
+                    };
+                    childDto = FillDirectoryChildrenAsync(childDto).Result;
+                    return childDto;
+                })
+                .ToList()
+                : new List<DirectoryDTO>();
+            root.SubDirectories = childrenDtos;
+            root.Files = files.Select(x => _mapper.Map<FileDTO>(x)).ToList();
+
+            return root;
         }
 
         public async Task<DirectoryDTO> CreateRepositoryAsync(int userId, string name)
@@ -62,7 +100,7 @@ namespace HARRepo.FileManager.Logic.Implementations
             });
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
-            return _mapper.Map<DirectoryDTO>(root);
+            return _mapper.Map<DirectoryDTO>(root.Entity);
         }
 
         public async Task<DirectoryDTO> CreateDirectoryAsync(string name, int parentId)
@@ -73,7 +111,7 @@ namespace HARRepo.FileManager.Logic.Implementations
                 ParentId = parentId
             });
             await _context.SaveChangesAsync();
-            return _mapper.Map<DirectoryDTO>(newDirectory);
+            return _mapper.Map<DirectoryDTO>(newDirectory.Entity);
         }
 
         public async Task DeleteDirectoryAsync(int directoryId)
@@ -111,7 +149,19 @@ namespace HARRepo.FileManager.Logic.Implementations
                 DirectoryId = directoryId
             });
             await _context.SaveChangesAsync();
-            return _mapper.Map<FileDTO>(newFile);
+            return _mapper.Map<FileDTO>(newFile.Entity);
+        }
+
+        public async Task DeleteFileAsync(int fileId)
+        {
+            var file = await _context.Set<File>()
+                .FindAsync(fileId);
+            if (file != null)
+            {
+                await _fileStorage.DeleteAsync(file.Path);
+                _context.Remove(file);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
