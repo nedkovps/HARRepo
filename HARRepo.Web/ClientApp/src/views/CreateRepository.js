@@ -22,7 +22,7 @@ const CreateRepository = props => {
     }
 
     const create = async () => {
-        const rawResponse = await fetch(`https://localhost:44363/api/users/${userId}/repositories?name=${model.name}`, {
+        await fetch(`https://localhost:44363/api/users/${userId}/repositories?name=${model.name}`, {
             method: 'POST',
             body: null
         });

@@ -22,7 +22,7 @@ http.createServer(async (req, res) => {
     const HARResponse = await blobClient.download(0);
     const HARContent = (await streamToBuffer(HARResponse.readableStreamBody)).toString();
 
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.writeHead(200, { 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
     res.end(HARContent);
 }).listen(port);
 
