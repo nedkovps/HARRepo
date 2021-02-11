@@ -18,7 +18,7 @@ namespace HARRepo.FileManager.Logic
                 options.UseSqlServer(configuration.GetConnectionString("HARRepoFileManagerContext")));
             services.AddScoped<DbContext, HARRepoFileManagerContext>();
 
-            services.AddSingleton<IFileStorageLogic, AzureBlobFileStorageLogic>();
+            services.AddSingleton<IFileStorage, AzureBlobFileStorage>();
         }
     }
 }

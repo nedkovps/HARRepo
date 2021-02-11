@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HARRepo.FileManager.Logic.Interfaces
 {
-    public interface IFileStorageLogic
+    public interface IFileStorage
     {
         Task<string> UploadAsync(string content);
         Task DeleteAsync(string path);

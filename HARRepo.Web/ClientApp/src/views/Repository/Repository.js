@@ -1,7 +1,7 @@
 ﻿import React, { useCallback, useEffect, useState } from 'react';
-import Loader from '../components/Loader';
-import PageHeader from '../components/PageHeader';
-import ShadowBlock from '../components/ShadowBlock';
+import Loader from '../../components/Loader';
+import PageHeader from '../../components/PageHeader';
+import ShadowBlock from '../../components/ShadowBlock';
 import RepositoryFileManager from './RepositoryFileManager';
 
 const Repository = props => {

@@ -1,0 +1,11 @@
+﻿.p-datascroller-content {
+    border-left: 1px solid #dee2e6 !important;
+}
+
+.p-datascroller .p-datascroller-content {
+    padding-top: 0px !important;
+}
+
+.p-button.p-button-sm {
+    padding: 0.2rem 0.3rem;
+}

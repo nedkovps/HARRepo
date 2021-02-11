@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import './HeadersTable.css';
 
 const HeadersTable = props => {
     return <div cellPadding="0" cellSpacing="0" className="d-table netInfoHeadersText netInfoText netInfoHeadersTable ">

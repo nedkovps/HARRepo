@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
-import Input from '../components/Input';
-import PageHeader from '../components/PageHeader';
-import ShadowBlock from '../components/ShadowBlock';
+import Input from '../../components/Input';
+import PageHeader from '../../components/PageHeader';
+import ShadowBlock from '../../components/ShadowBlock';
 
 const CreateRepository = props => {
 

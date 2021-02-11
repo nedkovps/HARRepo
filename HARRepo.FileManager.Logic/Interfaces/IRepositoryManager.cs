@@ -6,15 +6,10 @@ using System.Threading.Tasks;
 
 namespace HARRepo.FileManager.Logic.Interfaces
 {
-    public interface IFileManagerLogic
+    public interface IRepositoryManager
     {
         Task<IList<RepositoryDTO>> GetUserRepositoriesAsync(int userId);
         Task<RepositoryDetailsDTO> GetRepositoryAsync(int repoId);
         Task<DirectoryDTO> CreateRepositoryAsync(int userId, string name);
-        Task<DirectoryDTO> CreateDirectoryAsync(string name, int parentId);
-        Task DeleteDirectoryAsync(int directoryId);
-        Task UpdateFileLocationAsync(int fileId, int directoryId);
-        Task<FileDTO> UploadFileAsync(int directoryId, string name, string content);
-        Task DeleteFileAsync(int fileId);
     }
 }

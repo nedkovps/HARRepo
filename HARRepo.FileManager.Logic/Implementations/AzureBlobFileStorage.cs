@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace HARRepo.FileManager.Logic.Implementations
 {
-    public class AzureBlobFileStorageLogic : IFileStorageLogic
+    public class AzureBlobFileStorage : IFileStorage
     {
         private readonly BlobContainerClient _client;
 
-        public AzureBlobFileStorageLogic(IOptions<AzureBlobFileStorageOptions> options)
+        public AzureBlobFileStorage(IOptions<AzureBlobFileStorageOptions> options)
         {
             var blobClientOptions = options.Value;
             BlobServiceClient blobServiceClient = new BlobServiceClient(blobClientOptions.ConnectionString);

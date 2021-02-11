@@ -16,7 +16,9 @@ namespace HARRepo.FileManager.API
         {
             services.RegisterBusinessDependencies(configuration);
 
-            services.AddScoped<IFileManagerLogic, FileManagerLogic>();
+            services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddScoped<IDirectoryManager, DirectoryManager>();
+            services.AddScoped<IFileManager, Logic.Implementations.FileManager>();
         }
     }
 }

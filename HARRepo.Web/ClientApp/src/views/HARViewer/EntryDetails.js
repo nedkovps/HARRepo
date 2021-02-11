@@ -5,6 +5,7 @@ import { ProgressBar } from 'primereact/progressbar';
 import { TabView, TabPanel } from 'primereact/tabview';
 import classNames from 'classnames';
 import HeadersTable from './HeadersTable';
+import './EntryDetails.css';
 
 const EntryDetails = props => {
 
@@ -26,19 +27,19 @@ const EntryDetails = props => {
     });
 
     return <>
-        <div className="product-item">
-            <div className="product-detail">
-                <div className="product-name">{data.request.method}<span className="font-weight-bold"> {splitUrl[splitUrl.length - 1]}</span></div>
-                <div className="product-description font-italic"><span className="request-url">{data.request.url}</span></div>
+        <div className="request-info">
+            <div className="main-request-info">
+                <div className="request-method">{data.request.method}<span className="font-weight-bold"> {splitUrl[splitUrl.length - 1]}</span></div>
+                <div className="request-url-container font-italic"><span className="request-url">{data.request.url}</span></div>
                 <div><Tag className="p-mr-2" severity={data.response.status >= 200 && data.response.status < 300 ? 'success' : (data.response.status > 400 ? 'danger' : 'warning')} value={data.response.status}></Tag></div>
             </div>
             <div className="request-timeline pl-3 pr-3">
                 <ProgressBar value={percentOfTotalTime} style={{ marginLeft: `${percentAfterBeginning}%` }}
                     displayValueTemplate={() => <span>{`${timeInSeconds}s`}</span>}></ProgressBar>
             </div>
-            <div className="product-action">
-                <span className="product-category">{`${props.calcResponseSize(data.response.content.size)}`}</span>
-                <span className="product-category"><i className="pi pi-clock"></i>{` ${timeInSeconds}s`}</span>
+            <div className="additional-request-info">
+                <span className="request-detail">{`${props.calcResponseSize(data.response.content.size)}`}</span>
+                <span className="request-detail"><i className="pi pi-clock"></i>{` ${timeInSeconds}s`}</span>
                 <Button icon="pi pi-bars" label="Details" className={detailsButtonClasses}
                     onClick={() => setIsExpanded(!isExpanded)}></Button>
             </div>

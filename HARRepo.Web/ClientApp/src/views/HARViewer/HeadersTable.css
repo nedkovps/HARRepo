@@ -1,0 +1,41 @@
+﻿.p-tabview .p-tabview-panels {
+    padding: 0;
+}
+
+.netInfoHeadersText, .netInfoCookiesText {
+    padding-top: 0;
+    width: 100%;
+}
+
+.netInfoText {
+    padding: 8px;
+    background-color: #FFFFFF;
+    font-family: Monaco,monospace;
+}
+
+.netInfoHeadersGroup, .netInfoCookiesGroup {
+    margin-bottom: 4px;
+    border-bottom: 1px solid #D7D7D7;
+    padding-top: 8px;
+    padding-bottom: 2px;
+    font-family: Lucida Grande,Tahoma,sans-serif;
+    font-weight: bold;
+    color: #565656;
+    font-size: 14px;
+    min-width: 140px;
+}
+
+.netInfoParamName {
+    padding: 0 10px 0 0;
+    font-family: Lucida Grande,Tahoma,sans-serif;
+    font-weight: bold;
+    vertical-align: top;
+    text-align: right;
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.netInfoParamValue {
+    font-size: 13px;
+    width: 100%;
+}

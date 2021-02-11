@@ -1,6 +1,7 @@
 ﻿import React, { useRef, useState } from 'react';
 import { DataScroller } from 'primereact/datascroller';
 import EntryDetails from './EntryDetails';
+import './PageDetails.css';
 
 const PageDetails = props => {
 
@@ -39,7 +40,7 @@ const PageDetails = props => {
     const footerText = `Total Response Size: ${totals.totalSize}`;
 
     return <>
-        <div onClick={() => setIsExpanded(!isExpanded)}><i className={`pi pi-${isExpanded ? 'minus' : 'plus'}`}></i><span> {props.page.title}{!isExpanded && <span> ({headerText})</span>}</span></div>
+        <div className="clickable" onClick={() => setIsExpanded(!isExpanded)}><i className={`pi pi-${isExpanded ? 'minus' : 'plus'}`}></i><span> {props.page.title}{!isExpanded && <span> ({headerText})</span>}</span></div>
         {isExpanded && <DataScroller ref={ds} value={props.page.entries} itemTemplate={itemTemplate} rows={props.page.entries.length}
             header={headerText} footer={footerText} inline scrollHeight="650px" className="mt-1" />}
     </>;

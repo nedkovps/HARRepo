@@ -1,10 +1,10 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { Grid } from '../components/Grid';
+import { Grid } from '../../components/Grid';
 import { Column } from 'primereact/column';
-import PageHeader from '../components/PageHeader';
-import ShadowBlock from '../components/ShadowBlock';
+import PageHeader from '../../components/PageHeader';
+import ShadowBlock from '../../components/ShadowBlock';
 import { faExternalLinkAlt as viewIcon, faTrash as deleteIcon } from '@fortawesome/free-solid-svg-icons';
-import Loader from '../components/Loader';
+import Loader from '../../components/Loader';
 
 const UserRepositories = props => {
 

@@ -2,8 +2,8 @@
 import { Tree } from 'primereact/tree';
 import { ContextMenu } from 'primereact/contextmenu';
 import { Sidebar as Panel } from 'primereact/sidebar';
-import PageHeader from '../components/PageHeader';
-import Input from '../components/Input';
+import PageHeader from '../../components/PageHeader';
+import Input from '../../components/Input';
 import { withRouter } from 'react-router-dom';
 
 const RepositoryFileManager = props => {
@@ -81,6 +81,13 @@ const RepositoryFileManager = props => {
                 setFolderParentId(selectedNodeKey);
                 setPanelVisible(true);
             }
+        },
+        {
+            label: 'Delete Folder',
+            icon: 'pi pi-trash',
+            command: () => {
+                deleteDirectory(selectedNodeKey);
+            }
         }
     ];
 
@@ -143,8 +150,15 @@ const RepositoryFileManager = props => {
         reader.readAsBinaryString(file);
     }
 
+    const deleteDirectory = async id => {
+        await fetch(`https://localhost:44363/api/directories/${id}`, {
+            method: 'DELETE'
+        });
+        props.repoUpdated(expandedKeys);
+    }
+
     const deleteFile = async id => {
-        await fetch(`https://localhost:44363/api/files/${selectedNodeKey}`, {
+        await fetch(`https://localhost:44363/api/files/${id}`, {
             method: 'DELETE'
         });
         props.repoUpdated(expandedKeys);
