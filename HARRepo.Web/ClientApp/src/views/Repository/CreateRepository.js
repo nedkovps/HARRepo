@@ -2,6 +2,7 @@
 import Input from '../../components/Input';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
+import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 
 const CreateRepository = props => {
 
@@ -22,10 +23,7 @@ const CreateRepository = props => {
     }
 
     const create = async () => {
-        await fetch(`https://localhost:44363/api/users/${userId}/repositories?name=${model.name}`, {
-            method: 'POST',
-            body: null
-        });
+        await FileManagerServiceClient.createRepository(userId, model.name);
         props.history.push('/');
     }
 

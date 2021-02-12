@@ -2,6 +2,7 @@
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
+import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 
 const DeleteRepo = props => {
 
@@ -11,9 +12,7 @@ const DeleteRepo = props => {
 
     const deleteRepo = async () => {
         setIsDeleting(true);
-        await fetch(`https://localhost:44363/api/repositories/${id}`, {
-            method: 'DELETE'
-        });
+        await FileManagerServiceClient.deleteRepository(id);
         setIsDeleting(false);
         props.history.push('/');
     }

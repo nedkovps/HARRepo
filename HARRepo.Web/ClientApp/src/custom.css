@@ -10,3 +10,7 @@
 .clickable:hover {
     color: #007bff;
 }
+
+.p-message-detail {
+    padding: 0 0 0 20px;
+}

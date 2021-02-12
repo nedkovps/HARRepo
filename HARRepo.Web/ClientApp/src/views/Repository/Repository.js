@@ -2,6 +2,7 @@
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
+import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 import RepositoryFileManager from './RepositoryFileManager';
 
 const Repository = props => {
@@ -15,8 +16,7 @@ const Repository = props => {
     const [repoUpdates, setRepoUpdates] = useState({ updates: 0, expandedKeys: {} });
 
     const loadRepository = useCallback(async () => {
-        const response = await fetch(`https://localhost:44363/api/repositories/${id}`);
-        const repo = await response.json();
+        const repo = await FileManagerServiceClient.getRepository(id);
         setModel({ isLoading: false, data: repo });
     }, [id]);
 

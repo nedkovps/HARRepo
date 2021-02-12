@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
 import { faExternalLinkAlt as viewIcon, faTrash as deleteIcon } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../components/Loader';
+import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 
 const UserRepositories = props => {
 
@@ -18,8 +19,7 @@ const UserRepositories = props => {
     const [repos, setRepos] = useState(modelTemplate);
 
     const loadUserRepos = async () => {
-        const response = await fetch(`https://localhost:44363/api/users/${userId}/repositories`);
-        const repos = await response.json();
+        const repos = await FileManagerServiceClient.getRepositories(userId);
         setRepos({ isLoading: false, data: repos });
     }
 

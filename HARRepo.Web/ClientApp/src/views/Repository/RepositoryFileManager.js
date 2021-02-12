@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
 import { withRouter } from 'react-router-dom';
 import InfoPanel from '../../components/InfoPanel';
+import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 
 const RepositoryFileManager = props => {
 
@@ -36,7 +37,9 @@ const RepositoryFileManager = props => {
                         key: fl.id,
                         label: fl.name,
                         icon: 'pi pi-fw pi-file',
-                        type: 'file'
+                        type: 'file',
+                        draggable: true,
+                        droppable: false
                     };
                 });
             }
@@ -46,7 +49,9 @@ const RepositoryFileManager = props => {
                 label: f.name,
                 icon: 'pi pi-fw pi-folder',
                 children: [...subs, ...files],
-                type: 'dir'
+                type: 'dir',
+                draggable: false,
+                droppable: true
             };
         });
     }
@@ -62,7 +67,9 @@ const RepositoryFileManager = props => {
                 key: fl.id,
                 label: fl.name,
                 icon: 'pi pi-fw pi-file',
-                type: 'file'
+                type: 'file',
+                draggable: true,
+                droppable: false
             };
         });
     }
@@ -72,7 +79,9 @@ const RepositoryFileManager = props => {
         label: root.name,
         icon: 'pi pi-fw pi-folder',
         children: [...rootSubDirectories, ...rootFiles],
-        type: 'dir'
+        type: 'dir',
+        draggable: false,
+        droppable: true
     }];
 
     const [panel, setPanel] = useState({ isVisible: false, type: '' });
@@ -84,7 +93,7 @@ const RepositoryFileManager = props => {
     const menuRef = useRef(null);
     const fileMenuRef = useRef(null);
     const menu = [{
-            label: 'Upload',
+            label: 'Upload HAR',
             icon: 'pi pi-upload',
             command: () => {
                 setFolderParentId(selectedNodeKey);
@@ -133,10 +142,7 @@ const RepositoryFileManager = props => {
     }
 
     const createFolder = async () => {
-        await fetch(`https://localhost:44363/api/directories?parentId=${folderParentId}&name=${folderName}`, {
-            method: 'POST',
-            body: null
-        });
+        await FileManagerServiceClient.createFolder(folderParentId, folderName);
         setPanel({ isVisible: false, type: '' });
         setFolderName('');
         let expandedKeysCopy = { ...expandedKeys };
@@ -150,11 +156,7 @@ const RepositoryFileManager = props => {
             directoryId: folderParentId,
             content: content
         };
-        await fetch(`https://localhost:44363/api/files`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(uploadModel)
-        });
+        await FileManagerServiceClient.uploadFile(uploadModel);
         let expandedKeysCopy = { ...expandedKeys };
         expandedKeysCopy[folderParentId] = true;
         props.repoUpdated(expandedKeysCopy);
@@ -174,9 +176,7 @@ const RepositoryFileManager = props => {
     }
 
     const deleteDirectory = async id => {
-        await fetch(`https://localhost:44363/api/directories/${id}`, {
-            method: 'DELETE'
-        });
+        await FileManagerServiceClient.deleteDirectory(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
     }
@@ -186,15 +186,38 @@ const RepositoryFileManager = props => {
     }
 
     const deleteFile = async id => {
-        await fetch(`https://localhost:44363/api/files/${id}`, {
-            method: 'DELETE'
-        });
+        await FileManagerServiceClient.deleteFile(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
     }
 
     const viewFile = id => {
         props.history.push(`/ViewHAR/${filePaths[id]}`);
+    }
+
+    const findMovedFile = (original, modified) => {
+        if (original.children.length >= modified.children.length) {
+            const originalFolders = original.children.filter(x => x.type === 'dir');
+            const modifiedFolders = modified.children.filter(x => x.type === 'dir');
+            for (var i = 0; i < originalFolders.length; i++) {
+                var movedFile = findMovedFile(originalFolders[i], modifiedFolders[i]);
+                if (movedFile) {
+                    return movedFile;
+                }
+            }
+        }
+        else {
+            const originalFilesKeys = original.children.filter(x => x.type === 'file').map(x => x.key);
+            const fileId = modified.children.find(x => x.type === 'file' && !originalFilesKeys.includes(x.key)).key;
+            const directoryId = modified.key;
+            return { fileId, directoryId };
+        }
+    }
+
+    const moveFile = async updatedTree => {
+        const movedFile = findMovedFile(treeModel[0], updatedTree[0]);
+        await FileManagerServiceClient.changeFileLocation(movedFile.fileId, movedFile.directoryId);
+        props.repoUpdated(expandedKeys);
     }
 
     return <>
@@ -233,11 +256,11 @@ const RepositoryFileManager = props => {
         </Panel>
         <ContextMenu model={menu} ref={menuRef} onHide={() => setSelectedNodeKey(null)} />
         <ContextMenu model={fileMenu} ref={fileMenuRef} onHide={() => setSelectedNodeKey(null)} />
-        <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders." />
+        <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders. Files can be moved around folders by drag and drop." />
         <Tree className="mt-3 border-0 p-0" value={treeModel} contextMenuSelectionKey={selectedNodeKey}
-            onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)}
+            onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)} dragdropScope="demo"
             onContextMenu={event => event.node.type === 'dir' ? menuRef.current.show(event.originalEvent) : fileMenuRef.current.show(event.originalEvent)}
-            expandedKeys={expandedKeys} onToggle={e => setExpandedKeys(e.value)} />
+            expandedKeys={expandedKeys} onToggle={e => setExpandedKeys(e.value)} onDragDrop={event => moveFile(event.value)} />
     </>;
 }
 

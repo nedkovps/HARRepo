@@ -27,7 +27,7 @@ namespace HARRepo.FileManager.Logic.Implementations
         public async Task UpdateFileLocationAsync(int fileId, int directoryId)
         {
             var file = await _context.Set<File>()
-                .SingleOrDefaultAsync();
+                .FindAsync(fileId);
             if (file != null)
             {
                 file.DirectoryId = directoryId;
