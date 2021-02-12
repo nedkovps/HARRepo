@@ -32,7 +32,7 @@ const UserRepositories = props => {
     }
 
     const deleteRepo = repoId => {
-
+        props.history.push(`/DeleteRepo/${repoId}`);
     }
 
     const repoActions = [

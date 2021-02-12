@@ -35,9 +35,9 @@ namespace HARRepo.FileManager.Logic.Implementations
             return _mapper.Map<DirectoryDTO>(newDirectory.Entity);
         }
 
-        public async Task DeleteDirectoryAsync(int directoryId, bool isRoot = true)
+        public async Task DeleteDirectoryAsync(int directoryId, bool isRoot = true, bool noTransaction = false)
         {
-            using var transaction = isRoot ? await _context.Database.BeginTransactionAsync() : null;
+            using var transaction = isRoot && !noTransaction ? await _context.Database.BeginTransactionAsync() : null;
             var directory = await _context.Set<Directory>()
                 .Where(x => x.Id == directoryId)
                 .Include(x => x.SubDirectories)
@@ -55,7 +55,7 @@ namespace HARRepo.FileManager.Logic.Implementations
                 }
                 _context.Remove(directory);
                 await _context.SaveChangesAsync();
-                if (isRoot)
+                if (isRoot && !noTransaction)
                 {
                     await transaction.CommitAsync();
                 }

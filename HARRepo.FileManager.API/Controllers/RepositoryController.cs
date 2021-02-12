@@ -37,5 +37,12 @@ namespace HARRepo.FileManager.API.Controllers
             var repoRoot = await _repoManager.CreateRepositoryAsync(userId, name);
             return Ok(repoRoot);
         }
+        
+        [HttpDelete("repositories/{id}")]
+        public async Task<ActionResult> DeleteRepository(int id)
+        {
+            await _repoManager.DeleteRepositoryAsync(id);
+            return Ok();
+        }
     }
 }

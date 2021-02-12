@@ -16,11 +16,13 @@ namespace HARRepo.FileManager.Logic.Implementations
     {
         private readonly DbContext _context;
         private readonly IMapper _mapper;
+        private readonly IDirectoryManager _directoryManager;
 
-        public RepositoryManager(DbContext context, IMapper mapper)
+        public RepositoryManager(DbContext context, IMapper mapper, IDirectoryManager directoryManager)
         {
             _context = context;
             _mapper = mapper;
+            _directoryManager = directoryManager;
         }
 
         public async Task<IList<RepositoryDTO>> GetUserRepositoriesAsync(int userId)
@@ -99,6 +101,20 @@ namespace HARRepo.FileManager.Logic.Implementations
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
             return _mapper.Map<DirectoryDTO>(root.Entity);
+        }
+
+        public async Task DeleteRepositoryAsync(int repoId)
+        {
+            var repo = await _context.Set<Repository>()
+                .FindAsync(repoId);
+            if (repo != null)
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                _context.Remove(repo);
+                await _context.SaveChangesAsync();
+                await _directoryManager.DeleteDirectoryAsync(repo.RootId, noTransaction: true);
+                await transaction.CommitAsync();
+            }
         }
     }
 }

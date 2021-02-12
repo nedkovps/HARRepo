@@ -9,6 +9,6 @@ namespace HARRepo.FileManager.Logic.Interfaces
     public interface IDirectoryManager
     {
         Task<DirectoryDTO> CreateDirectoryAsync(string name, int parentId);
-        Task DeleteDirectoryAsync(int directoryId, bool isRoot = true);
+        Task DeleteDirectoryAsync(int directoryId, bool isRoot = true, bool noTransaction = false);
     }
 }

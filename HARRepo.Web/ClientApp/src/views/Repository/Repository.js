@@ -29,7 +29,7 @@ const Repository = props => {
     }
 
     return <ShadowBlock>
-        <PageHeader title={`Repository Details ${!model.isLoading && model.data ? `(${model.data.name})` : ''}`} />
+        <PageHeader title={`${!model.isLoading && model.data ? `${model.data.name}` : ''}`} />
         {model.isLoading && <Loader />}
         {!model.isLoading && model.data && <RepositoryFileManager expandedKeys={repoUpdates.expandedKeys} root={model.data.root} repoUpdated={repoUpdatedHandler} />}
     </ShadowBlock>;

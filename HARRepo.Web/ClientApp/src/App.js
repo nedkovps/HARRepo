@@ -6,6 +6,7 @@ import CreateRepository from './views/Repository/CreateRepository';
 import HARViewer from './views/HARViewer/HARViewer';
 import Repository from './views/Repository/Repository';
 import UserRepositories from './views/Repository/UserRepositories';
+import DeleteRepo from './views/Repository/DeleteRepo';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -16,6 +17,7 @@ export default class App extends Component {
             <Route exact path='/' component={UserRepositories} />
             <Route exact path='/CreateRepo' component={CreateRepository} />
             <Route path='/Repos/:id' component={Repository} />
+            <Route path='/DeleteRepo/:id' component={DeleteRepo} />
             <Route path='/ViewHAR/:id' component={HARViewer} />
       </Layout>
     );

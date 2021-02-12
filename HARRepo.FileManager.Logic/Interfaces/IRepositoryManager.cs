@@ -11,5 +11,6 @@ namespace HARRepo.FileManager.Logic.Interfaces
         Task<IList<RepositoryDTO>> GetUserRepositoriesAsync(int userId);
         Task<RepositoryDetailsDTO> GetRepositoryAsync(int repoId);
         Task<DirectoryDTO> CreateRepositoryAsync(int userId, string name);
+        Task DeleteRepositoryAsync(int repoId);
     }
 }

@@ -5,6 +5,7 @@ import { Sidebar as Panel } from 'primereact/sidebar';
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
 import { withRouter } from 'react-router-dom';
+import InfoPanel from '../../components/InfoPanel';
 
 const RepositoryFileManager = props => {
 
@@ -50,14 +51,31 @@ const RepositoryFileManager = props => {
         });
     }
 
+    const rootSubDirectories = mapSubDirectories(root.subDirectories);
+    let rootFiles = [];
+    if (root.files && root.files.length > 0) {
+        rootFiles = root.files.map(fl => {
+
+            filePaths[fl.id] = fl.path;
+
+            return {
+                key: fl.id,
+                label: fl.name,
+                icon: 'pi pi-fw pi-file',
+                type: 'file'
+            };
+        });
+    }
+
     const treeModel = [{
         key: root.id,
         label: root.name,
         icon: 'pi pi-fw pi-folder',
-        children: mapSubDirectories(root.subDirectories)
+        children: [...rootSubDirectories, ...rootFiles],
+        type: 'dir'
     }];
 
-    const [panelVisible, setPanelVisible] = useState(false);
+    const [panel, setPanel] = useState({ isVisible: false, type: '' });
     const [folderParentId, setFolderParentId] = useState(null);
     const [folderName, setFolderName] = useState('');
     const [selectedNodeKey, setSelectedNodeKey] = useState(null);
@@ -65,8 +83,7 @@ const RepositoryFileManager = props => {
 
     const menuRef = useRef(null);
     const fileMenuRef = useRef(null);
-    const menu = [
-        {
+    const menu = [{
             label: 'Upload',
             icon: 'pi pi-upload',
             command: () => {
@@ -79,17 +96,19 @@ const RepositoryFileManager = props => {
             icon: 'pi pi-plus',
             command: () => {
                 setFolderParentId(selectedNodeKey);
-                setPanelVisible(true);
+                setPanel({ isVisible: true, type: 'newFolder' });
             }
-        },
-        {
+        }];
+
+    if (selectedNodeKey !== root.id) {
+        menu.push({
             label: 'Delete Folder',
             icon: 'pi pi-trash',
             command: () => {
-                deleteDirectory(selectedNodeKey);
+                confirmDeleteDirectory(selectedNodeKey);
             }
-        }
-    ];
+        });
+    }
 
     const fileMenu = [
         {
@@ -103,7 +122,7 @@ const RepositoryFileManager = props => {
             label: 'Delete File',
             icon: 'pi pi-trash',
             command: () => {
-                deleteFile(selectedNodeKey);
+                confirmDeleteFile(selectedNodeKey);
             }
         }
     ];
@@ -118,7 +137,7 @@ const RepositoryFileManager = props => {
             method: 'POST',
             body: null
         });
-        setPanelVisible(false);
+        setPanel({ isVisible: false, type: '' });
         setFolderName('');
         let expandedKeysCopy = { ...expandedKeys };
         expandedKeysCopy[folderParentId] = true;
@@ -150,17 +169,27 @@ const RepositoryFileManager = props => {
         reader.readAsBinaryString(file);
     }
 
+    const confirmDeleteDirectory = id => {
+        setPanel({ isVisible: true, type: 'deleteFolder', id: id });
+    }
+
     const deleteDirectory = async id => {
         await fetch(`https://localhost:44363/api/directories/${id}`, {
             method: 'DELETE'
         });
+        setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
+    }
+
+    const confirmDeleteFile = id => {
+        setPanel({ isVisible: true, type: 'deleteFile', id: id });
     }
 
     const deleteFile = async id => {
         await fetch(`https://localhost:44363/api/files/${id}`, {
             method: 'DELETE'
         });
+        setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
     }
 
@@ -170,18 +199,41 @@ const RepositoryFileManager = props => {
 
     return <>
         <input id='selectHAR' ref={uploadHARRef} hidden type="file" onChange={uploadHARHandler} />
-        <Panel position="bottom" visible={panelVisible} onHide={() => setPanelVisible(false)} style={{ height: 'auto' }}>
-            <PageHeader title="Create New Folder" />
-            <div>
-                <Input label="Name" value={folderName} change={folderNameChangeHandler} />
-            </div>
-            <div className="d-block" style={{ height: '50px' }}>
-                <button className="btn btn-primary float-right ml-1" onClick={createFolder}>Create</button>
-                <button className="btn btn-secondary float-right" onClick={() => setPanelVisible(false)}>Cancel</button>
-            </div>
+        <Panel position="bottom" visible={panel.isVisible} onHide={() => setPanel({ isVisible: false, type: '' })} style={{ height: 'auto' }}>
+            {panel.type === 'newFolder' && <>
+                <PageHeader title="Create New Folder" />
+                <div>
+                    <Input label="Name" value={folderName} change={folderNameChangeHandler} />
+                </div>
+                <div className="d-block" style={{ height: '50px' }}>
+                    <button className="btn btn-primary float-right ml-1" onClick={createFolder}>Create</button>
+                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
+                </div>
+            </>}
+            {panel.type === 'deleteFolder' && <>
+                <PageHeader title="Delete Folder" />
+                <p>
+                    Are you sure you want to delete the folder?
+                </p>
+                <div className="d-block" style={{ height: '50px' }}>
+                    <button className="btn btn-danger float-right ml-1" onClick={() => deleteDirectory(panel.id)}>Delete</button>
+                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
+                </div>
+            </>}
+            {panel.type === 'deleteFile' && <>
+                <PageHeader title="Delete File" />
+                <p>
+                    Are you sure you want to delete the file?
+                </p>
+                <div className="d-block" style={{ height: '50px' }}>
+                    <button className="btn btn-danger float-right ml-1" onClick={() => deleteFile(panel.id)}>Delete</button>
+                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
+                </div>
+            </>}
         </Panel>
         <ContextMenu model={menu} ref={menuRef} onHide={() => setSelectedNodeKey(null)} />
         <ContextMenu model={fileMenu} ref={fileMenuRef} onHide={() => setSelectedNodeKey(null)} />
+        <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders." />
         <Tree className="mt-3 border-0 p-0" value={treeModel} contextMenuSelectionKey={selectedNodeKey}
             onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)}
             onContextMenu={event => event.node.type === 'dir' ? menuRef.current.show(event.originalEvent) : fileMenuRef.current.show(event.originalEvent)}
