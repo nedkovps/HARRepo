@@ -1,6 +1,19 @@
 'use strict';
 var http = require('http');
 var port = process.env.PORT || 1337;
+var webconfig = require("webconfig");
+
+let settings = null;
+const loadSettings = async () => {
+    const config = await webconfig
+        .compile({
+            sources: [
+                './Web.config',
+            ]
+        });
+    settings = config.appSettings;
+}
+loadSettings();
 
 const { BlobServiceClient, StorageSharedKeyCredential } = require('@azure/storage-blob');
 const url = require('url');
@@ -9,13 +22,13 @@ http.createServer(async (req, res) => {
 
     const query = url.parse(req.url, true).query;
 
-    const account = process.env.ACCOUNT_NAME || "devstoreaccount1";
-    const accountKey = process.env.ACCOUNT_KEY || "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
+    const account = process.env.StorageAccountName || settings.StorageAccountName;
+    const accountKey = process.env.StorageAccountKey || settings.StorageAccountKey;
 
     const credential = new StorageSharedKeyCredential(account, accountKey);
-    const client = new BlobServiceClient('http://127.0.0.1:10000/devstoreaccount1', credential);
+    const client = new BlobServiceClient(process.env.BlobUrl || settings.BlobUrl, credential);
 
-    const containerName = 'harstorage';
+    const containerName = process.env.BlobContainerName || settings.BlobContainerName;
     const containerClient = client.getContainerClient(containerName);
 
     const blobClient = containerClient.getBlobClient(query.id);
@@ -24,9 +37,10 @@ http.createServer(async (req, res) => {
 
     res.writeHead(200, { 'Content-Type': 'application/json', "Access-Control-Allow-Origin": "*" });
     res.end(HARContent);
+
 }).listen(port);
 
-async function streamToBuffer(readableStream) {
+const streamToBuffer = async (readableStream) => {
     return new Promise((resolve, reject) => {
         const chunks = [];
         readableStream.on("data", (data) => {

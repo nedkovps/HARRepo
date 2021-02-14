@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "/",
+      "launchUrl": "Static/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "HARRepo.FileManager.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "/",
+      "launchUrl": "Static/index.html",
       "applicationUrl": "https://localhost:44363/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

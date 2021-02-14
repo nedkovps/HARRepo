@@ -1,6 +1,6 @@
 {
-  "name": "harrepo.web",
-  "version": "0.1.0",
+  "name": "harrepo.ui",
+  "version": "0.3.0",
   "private": true,
   "dependencies": {
     "bootstrap": "^4.1.3",
