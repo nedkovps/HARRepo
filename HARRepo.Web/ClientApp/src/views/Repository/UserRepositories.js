@@ -1,15 +1,15 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿import React, { useCallback, useEffect, useState } from 'react';
 import { Grid } from '../../components/Grid';
 import { Column } from 'primereact/column';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
 import { faExternalLinkAlt as viewIcon, faTrash as deleteIcon } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../components/Loader';
-import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
+import useFileManagerAPI from '../../framework/hooks/useAPI';
 
 const UserRepositories = props => {
 
-    const userId = 1;
+    const client = useFileManagerAPI();
 
     const modelTemplate = {
         isLoading: true,
@@ -18,14 +18,14 @@ const UserRepositories = props => {
 
     const [repos, setRepos] = useState(modelTemplate);
 
-    const loadUserRepos = async () => {
-        const repos = await FileManagerServiceClient.getRepositories(userId);
+    const loadUserRepos = useCallback(async () => {
+        const repos = await client.getRepositories();
         setRepos({ isLoading: false, data: repos });
-    }
+    }, [client]);
 
     useEffect(() => {
         loadUserRepos();
-    }, []);
+    }, [loadUserRepos]);
 
     const viewRepo = repoId => {
         props.history.push(`/Repos/${repoId}`);

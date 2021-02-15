@@ -1,5 +1,6 @@
 ﻿using HARRepo.FileManager.API.Models;
 using HARRepo.FileManager.Logic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace HARRepo.FileManager.API.Controllers
 {
     [Route("api")]
+    [Authorize]
     public class FileController : Controller
     {
         private readonly IFileManager _fileManager;

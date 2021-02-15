@@ -4,9 +4,11 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { Sidebar as Panel } from 'primereact/sidebar';
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import InfoPanel from '../../components/InfoPanel';
 import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
+import { ActionButton } from '../../components/ActionButton';
+import { faPlus, faTrash, faUpload, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 const RepositoryFileManager = props => {
 
@@ -90,22 +92,34 @@ const RepositoryFileManager = props => {
     const [selectedNodeKey, setSelectedNodeKey] = useState(null);
     const [expandedKeys, setExpandedKeys] = useState({});
 
+    const uploadHARCommand = key => {
+        setFolderParentId(key);
+        uploadHARRef.current.click();
+    }
+
+    const newFolderCommand = key => {
+        setFolderParentId(key);
+        setPanel({ isVisible: true, type: 'newFolder' });
+    }
+
+    const deleteFolderCommand = key => {
+        confirmDeleteDirectory(key);
+    }
+
     const menuRef = useRef(null);
     const fileMenuRef = useRef(null);
     const menu = [{
             label: 'Upload HAR',
             icon: 'pi pi-upload',
             command: () => {
-                setFolderParentId(selectedNodeKey);
-                uploadHARRef.current.click();
+                uploadHARCommand(selectedNodeKey);
             }
         },
         {
             label: 'New Folder',
             icon: 'pi pi-plus',
             command: () => {
-                setFolderParentId(selectedNodeKey);
-                setPanel({ isVisible: true, type: 'newFolder' });
+                deleteFolderCommand(selectedNodeKey);
             }
         }];
 
@@ -220,6 +234,43 @@ const RepositoryFileManager = props => {
         props.repoUpdated(expandedKeys);
     }
 
+    const expandOrCondenseFolder = key => {
+        let expandedKeysCopy = { ...expandedKeys };
+        if (expandedKeysCopy[key]) {
+            delete expandedKeysCopy[key];
+        }
+        else {
+            expandedKeysCopy[key] = true;
+        }
+        setExpandedKeys(expandedKeysCopy);
+    }
+
+    const nodeTemplate = (node) => {
+        if (node.type === 'file') {
+            return (
+                <div className="w-100">
+                    <span>{node.label}</span>
+                    <div className="btn-group float-right" role="group">
+                        <ActionButton icon={faExternalLinkAlt} tooltip="View HAR" click={() => viewFile(node.key)} />
+                        {node.key !== root.id && <ActionButton icon={faTrash} tooltip="Delete File" click={() => confirmDeleteFile(node.key)} />}
+                    </div>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="w-100">
+                    <span className="noselect" onDoubleClick={() => expandOrCondenseFolder(node.key)}>{node.label}</span>
+                    <div className="btn-group float-right" role="group">
+                        <ActionButton icon={faUpload} tooltip="Upload HAR" click={() => uploadHARCommand(node.key)} />
+                        <ActionButton icon={faPlus} tooltip="New Folder" click={() => newFolderCommand(node.key)} />
+                        {node.key !== root.id && <ActionButton icon={faTrash} tooltip="Delete Folder" click={() => deleteFolderCommand(node.key)} />}
+                    </div>
+                </div>
+            )
+        }
+    }
+
     return <>
         <input id='selectHAR' ref={uploadHARRef} hidden type="file" onChange={uploadHARHandler} />
         <Panel position="bottom" visible={panel.isVisible} onHide={() => setPanel({ isVisible: false, type: '' })} style={{ height: 'auto' }}>
@@ -256,8 +307,8 @@ const RepositoryFileManager = props => {
         </Panel>
         <ContextMenu model={menu} ref={menuRef} onHide={() => setSelectedNodeKey(null)} />
         <ContextMenu model={fileMenu} ref={fileMenuRef} onHide={() => setSelectedNodeKey(null)} />
-        <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders. Files can be moved around folders by drag and drop." />
-        <Tree className="mt-3 border-0 p-0" value={treeModel} contextMenuSelectionKey={selectedNodeKey}
+        <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders. Alternatively the action buttons on the right can be used. Files can be moved around folders by drag and drop." />
+        <Tree className="mt-3 border-0 p-0" value={treeModel} contextMenuSelectionKey={selectedNodeKey} nodeTemplate={nodeTemplate}
             onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)} dragdropScope="demo"
             onContextMenu={event => event.node.type === 'dir' ? menuRef.current.show(event.originalEvent) : fileMenuRef.current.show(event.originalEvent)}
             expandedKeys={expandedKeys} onToggle={e => setExpandedKeys(e.value)} onDragDrop={event => moveFile(event.value)} />

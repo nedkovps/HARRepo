@@ -1,62 +1,44 @@
-﻿export class FileManagerServiceClient {
+﻿import { APIClient } from "./APIClient";
+
+export class FileManagerServiceClient {
 
     static APIUrl = process.env.REACT_APP_FILE_MANAGER_API_URL;
 
-    static getRepositories = async userId => {
-        const response = await fetch(`${this.APIUrl}/users/${userId}/repositories`);
-        const repos = await response.json();
+    static getRepositories = async () => {
+        const repos = APIClient.getSafe(`${this.APIUrl}/users/current/repositories`);
         return repos;
     }
 
     static getRepository = async id => {
-        const response = await fetch(`${this.APIUrl}/repositories/${id}`);
-        const repo = await response.json();
+        const repo = APIClient.getSafe(`${this.APIUrl}/repositories/${id}`);
         return repo;
     }
 
-    static createRepository = async (userId, name) => {
-        await fetch(`${this.APIUrl}/users/${userId}/repositories?name=${name}`, {
-            method: 'POST',
-            body: null
-        });
+    static createRepository = async name => {
+        await APIClient.postSafe(`${this.APIUrl}/users/current/repositories?name=${name}`);
     }
 
     static deleteRepository = async id => {
-        await fetch(`${this.APIUrl}/repositories/${id}`, {
-            method: 'DELETE'
-        });
+        await APIClient.deleteSafe(`${this.APIUrl}/repositories/${id}`);
     }
 
     static createFolder = async (parentId, name) => {
-        await fetch(`${this.APIUrl}/directories?parentId=${parentId}&name=${name}`, {
-            method: 'POST',
-            body: null
-        });
+        await APIClient.postSafe(`${this.APIUrl}/directories?parentId=${parentId}&name=${name}`);
     }
 
     static deleteDirectory = async id => {
-        await fetch(`${this.APIUrl}/directories/${id}`, {
-            method: 'DELETE'
-        });
+        await APIClient.deleteSafe(`${this.APIUrl}/directories/${id}`);
     }
 
     static uploadFile = async file => {
-        await fetch(`${this.APIUrl}/files`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(file)
-        });
+        await APIClient.postSafe(`${this.APIUrl}/files`, JSON.stringify(file));
     }
 
     static changeFileLocation = async (fileId, directoryId) => {
-        await fetch(`${this.APIUrl}/files/${fileId}/directory/${directoryId}`, {
-            method: 'PUT'
-        });
+        await APIClient.putSafe(`${this.APIUrl}/files/${fileId}/directory/${directoryId}`);
     }
 
     static deleteFile = async id => {
-        await fetch(`${this.APIUrl}/files/${id}`, {
-            method: 'DELETE'
-        });
+        await APIClient.deleteSafe(`${this.APIUrl}/files/${id}`);
     }
 }

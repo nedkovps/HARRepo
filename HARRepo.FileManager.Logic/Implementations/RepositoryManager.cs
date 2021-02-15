@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using HARRepo.FileManager.Data.Entities;
 using HARRepo.FileManager.Logic.DTOs;
+using HARRepo.FileManager.Logic.Exceptions;
 using HARRepo.FileManager.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,12 +18,15 @@ namespace HARRepo.FileManager.Logic.Implementations
         private readonly DbContext _context;
         private readonly IMapper _mapper;
         private readonly IDirectoryManager _directoryManager;
+        private readonly IAuthorizationManager _auth;
 
-        public RepositoryManager(DbContext context, IMapper mapper, IDirectoryManager directoryManager)
+        public RepositoryManager(DbContext context, IMapper mapper, IDirectoryManager directoryManager,
+            IAuthorizationManager authorization)
         {
             _context = context;
             _mapper = mapper;
             _directoryManager = directoryManager;
+            _auth = authorization;
         }
 
         public async Task<IList<RepositoryDTO>> GetUserRepositoriesAsync(int userId)
@@ -37,8 +41,17 @@ namespace HARRepo.FileManager.Logic.Implementations
 
         public async Task<RepositoryDetailsDTO> GetRepositoryAsync(int repoId)
         {
+            var user = await _auth.GetCurrentUserAsync();
             var repo = await _context.Set<Repository>()
                 .FindAsync(repoId);
+            if (repo == null)
+            {
+                throw new NotFoundException();
+            }
+            if (repo.UserId != user.Id)
+            {
+                throw new AccessDeniedException();
+            }
             var root = await _context.Set<Directory>()
                 .FindAsync(repo.RootId);
 
@@ -105,16 +118,23 @@ namespace HARRepo.FileManager.Logic.Implementations
 
         public async Task DeleteRepositoryAsync(int repoId)
         {
+            var user = await _auth.GetCurrentUserAsync();
             var repo = await _context.Set<Repository>()
                 .FindAsync(repoId);
-            if (repo != null)
+            if (repo == null)
             {
-                using var transaction = await _context.Database.BeginTransactionAsync();
-                _context.Remove(repo);
-                await _context.SaveChangesAsync();
-                await _directoryManager.DeleteDirectoryAsync(repo.RootId, noTransaction: true);
-                await transaction.CommitAsync();
+                throw new NotFoundException();
             }
+            if (repo.UserId != user.Id)
+            {
+                throw new AccessDeniedException();
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            _context.Remove(repo);
+            await _context.SaveChangesAsync();
+            await _directoryManager.DeleteDirectoryAsync(repo.RootId, noTransaction: true);
+            await transaction.CommitAsync();
         }
     }
 }

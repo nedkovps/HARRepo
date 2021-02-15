@@ -1,4 +1,5 @@
 ﻿using HARRepo.FileManager.Logic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,23 @@ using System.Threading.Tasks;
 namespace HARRepo.FileManager.API.Controllers
 {
     [Route("api")]
+    [Authorize]
     public class RepositoryController : Controller
     {
         private readonly IRepositoryManager _repoManager;
+        private readonly IAuthorizationManager _auth;
 
-        public RepositoryController(IRepositoryManager repositoryManager)
+        public RepositoryController(IRepositoryManager repositoryManager, IAuthorizationManager authorization)
         {
             _repoManager = repositoryManager;
+            _auth = authorization;
         }
 
-        [HttpGet("users/{userId}/repositories")]
-        public async Task<ActionResult> GetUserRepositories(int userId)
+        [HttpGet("users/current/repositories")]
+        public async Task<ActionResult> GetUserRepositories()
         {
-            var repos = await _repoManager.GetUserRepositoriesAsync(userId);
+            var user = await _auth.GetCurrentUserAsync();
+            var repos = await _repoManager.GetUserRepositoriesAsync(user.Id);
             return Ok(repos);
         }
 
@@ -31,10 +36,11 @@ namespace HARRepo.FileManager.API.Controllers
             return Ok(repo);
         }
 
-        [HttpPost("users/{userId}/repositories")]
-        public async Task<ActionResult> CreateRepository(int userId, string name)
+        [HttpPost("users/current/repositories")]
+        public async Task<ActionResult> CreateRepository(string name)
         {
-            var repoRoot = await _repoManager.CreateRepositoryAsync(userId, name);
+            var user = await _auth.GetCurrentUserAsync();
+            var repoRoot = await _repoManager.CreateRepositoryAsync(user.Id, name);
             return Ok(repoRoot);
         }
         

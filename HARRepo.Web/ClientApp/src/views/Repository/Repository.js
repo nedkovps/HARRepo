@@ -2,10 +2,12 @@
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
-import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
+import useFileManagerAPI from '../../framework/hooks/useAPI';
 import RepositoryFileManager from './RepositoryFileManager';
 
 const Repository = props => {
+
+    const client = useFileManagerAPI();
 
     const id = props.match.params.id;
     const modelTemplate = {
@@ -16,9 +18,9 @@ const Repository = props => {
     const [repoUpdates, setRepoUpdates] = useState({ updates: 0, expandedKeys: {} });
 
     const loadRepository = useCallback(async () => {
-        const repo = await FileManagerServiceClient.getRepository(id);
+        const repo = await client.getRepository(id);
         setModel({ isLoading: false, data: repo });
-    }, [id]);
+    }, [id, client]);
 
     useEffect(() => {
         loadRepository();

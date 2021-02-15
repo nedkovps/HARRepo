@@ -48,16 +48,15 @@ namespace HARRepo.FileManager.API
                 });
             });
 
-            //services.AddAuthentication()
-            //    .AddGoogle(options =>
-            //    {
-            //        IConfigurationSection googleAuthNSection =
-            //            Configuration.GetSection("Authentication:Google");
-
-            //        options.ClientId = googleAuthNSection["ClientId"];
-            //        options.ClientSecret = googleAuthNSection["ClientSecret"];
-            //    })
-            //    .AddJwtBearer();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = Configuration["Auth0Domain"];
+                options.Audience = Configuration["HarRepoFileManagerAPIUrl"];
+            });
 
             services.AddControllers();
         }
@@ -65,10 +64,7 @@ namespace HARRepo.FileManager.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseExceptionHandler("/error");
 
             app.UseHttpsRedirection();
 
@@ -80,10 +76,10 @@ namespace HARRepo.FileManager.API
 
             app.UseRouting();
 
-            //app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseCors(MyAllowSpecificOrigins);
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

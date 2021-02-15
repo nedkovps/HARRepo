@@ -6,9 +6,7 @@ import { FileManagerServiceClient } from '../../framework/FileManagerServiceClie
 
 const CreateRepository = props => {
 
-    const userId = 1;
     const modelTemplate = {
-        userId: userId,
         name: ''
     };
     const [model, setModel] = useState(modelTemplate);
@@ -23,7 +21,7 @@ const CreateRepository = props => {
     }
 
     const create = async () => {
-        await FileManagerServiceClient.createRepository(userId, model.name);
+        await FileManagerServiceClient.createRepository(model.name);
         props.history.push('/');
     }
 
