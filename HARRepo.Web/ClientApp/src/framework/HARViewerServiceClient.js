@@ -1,10 +1,11 @@
-﻿export class HARViewerServiceClient {
+﻿import { APIClient } from "./APIClient";
+
+export class HARViewerServiceClient {
 
     static APIUrl = process.env.REACT_APP_HAR_VIEWERAPI_URL;
 
     static getHAR = async id => {
-        const HARResponse = await fetch(`${this.APIUrl}?id=${id}`);
-        const HAR = await HARResponse.json();
+        const HAR = APIClient.getSafe(`${this.APIUrl}/HAR?id=${id}`);
         return HAR;
     }
 

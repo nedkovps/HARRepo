@@ -2,17 +2,18 @@
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
-import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
+import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
 
 const DeleteRepo = props => {
 
+    const client = useFileManagerAPI();
     const id = props.match.params.id;
 
     const [isDeleting, setIsDeleting] = useState(false);
 
     const deleteRepo = async () => {
         setIsDeleting(true);
-        await FileManagerServiceClient.deleteRepository(id);
+        await client.deleteRepository(id);
         setIsDeleting(false);
         props.history.push('/');
     }

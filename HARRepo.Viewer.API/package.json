@@ -1,0 +1,23 @@
+{
+  "name": "harrepo.viewer.api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "description": "HARRepo.Viewer.API",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "express": "5.0.0-alpha.8",
+    "cors": "2.8.5",
+    "express-jwt": "6.0.0",
+    "jwks-rsa": "1.12.2",
+    "webconfig": "1.0.3",
+    "@azure/storage-blob": "12.5.0-beta.1"
+  },
+  "engines": {
+    "node": "~6.10.x"
+  }
+}

@@ -2,9 +2,11 @@
 import Input from '../../components/Input';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
-import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
+import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
 
 const CreateRepository = props => {
+
+    const client = useFileManagerAPI();
 
     const modelTemplate = {
         name: ''
@@ -21,7 +23,7 @@ const CreateRepository = props => {
     }
 
     const create = async () => {
-        await FileManagerServiceClient.createRepository(model.name);
+        await client.createRepository(model.name);
         props.history.push('/');
     }
 

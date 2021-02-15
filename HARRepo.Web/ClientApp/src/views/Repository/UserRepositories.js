@@ -5,7 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
 import { faExternalLinkAlt as viewIcon, faTrash as deleteIcon } from '@fortawesome/free-solid-svg-icons';
 import Loader from '../../components/Loader';
-import useFileManagerAPI from '../../framework/hooks/useAPI';
+import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
 
 const UserRepositories = props => {
 

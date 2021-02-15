@@ -2,7 +2,7 @@
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ShadowBlock from '../../components/ShadowBlock';
-import useFileManagerAPI from '../../framework/hooks/useAPI';
+import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
 import RepositoryFileManager from './RepositoryFileManager';
 
 const Repository = props => {

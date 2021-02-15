@@ -8,7 +8,7 @@ export default class Auth {
             domain: process.env.REACT_APP_AUTH0_DOMAIN,
             clientID: process.env.REACT_APP_AUTH0_CLIENT_ID,
             redirectUri: process.env.REACT_APP_CALLBACK_URL,
-            audience: (process.env.REACT_APP_FILE_MANAGER_API_URL + '/'),
+            audience: process.env.REACT_APP_API_AUDIENCE,
             responseType: 'token id_token',
             scope: 'openid profile email'
         });

@@ -4,14 +4,15 @@ import { ContextMenu } from 'primereact/contextmenu';
 import { Sidebar as Panel } from 'primereact/sidebar';
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/Input';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import InfoPanel from '../../components/InfoPanel';
-import { FileManagerServiceClient } from '../../framework/FileManagerServiceClient';
 import { ActionButton } from '../../components/ActionButton';
 import { faPlus, faTrash, faUpload, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
 
 const RepositoryFileManager = props => {
 
+    const client = useFileManagerAPI();
     const [root, setRoot] = useState(props.root);
     const uploadHARRef = useRef(null);
 
@@ -156,7 +157,7 @@ const RepositoryFileManager = props => {
     }
 
     const createFolder = async () => {
-        await FileManagerServiceClient.createFolder(folderParentId, folderName);
+        await client.createFolder(folderParentId, folderName);
         setPanel({ isVisible: false, type: '' });
         setFolderName('');
         let expandedKeysCopy = { ...expandedKeys };
@@ -170,7 +171,7 @@ const RepositoryFileManager = props => {
             directoryId: folderParentId,
             content: content
         };
-        await FileManagerServiceClient.uploadFile(uploadModel);
+        await client.uploadFile(uploadModel);
         let expandedKeysCopy = { ...expandedKeys };
         expandedKeysCopy[folderParentId] = true;
         props.repoUpdated(expandedKeysCopy);
@@ -190,7 +191,7 @@ const RepositoryFileManager = props => {
     }
 
     const deleteDirectory = async id => {
-        await FileManagerServiceClient.deleteDirectory(id);
+        await client.deleteDirectory(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
     }
@@ -200,7 +201,7 @@ const RepositoryFileManager = props => {
     }
 
     const deleteFile = async id => {
-        await FileManagerServiceClient.deleteFile(id);
+        await client.deleteFile(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
     }
@@ -230,7 +231,7 @@ const RepositoryFileManager = props => {
 
     const moveFile = async updatedTree => {
         const movedFile = findMovedFile(treeModel[0], updatedTree[0]);
-        await FileManagerServiceClient.changeFileLocation(movedFile.fileId, movedFile.directoryId);
+        await client.changeFileLocation(movedFile.fileId, movedFile.directoryId);
         props.repoUpdated(expandedKeys);
     }
 

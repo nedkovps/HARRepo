@@ -55,7 +55,7 @@ namespace HARRepo.FileManager.API
             }).AddJwtBearer(options =>
             {
                 options.Authority = Configuration["Auth0Domain"];
-                options.Audience = Configuration["HarRepoFileManagerAPIUrl"];
+                options.Audience = Configuration["APIAudience"];
             });
 
             services.AddControllers();

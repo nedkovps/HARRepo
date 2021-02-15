@@ -1,19 +1,20 @@
 ﻿import React, { useCallback, useEffect, useState } from 'react';
 import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
-import { HARViewerServiceClient } from '../../framework/HARViewerServiceClient';
 import HARDetails from './HARDetails';
+import useHARViewerAPI from '../../framework/hooks/useHARViewerAPI';
 
 const HARViewer = props => {
 
+    const client = useHARViewerAPI();
     const id = props.match.params.id;
     const [HAR, setHAR] = useState({ data: null, isLoading: true });
 
     const loadHAR = useCallback(async () => {
         setHAR({ data: null, isLoading: true });
-        const HARData = await HARViewerServiceClient.getHAR(id);
+        const HARData = await client.getHAR(id);
         setHAR({ data: HARData, isLoading: false });
-    }, [id]);
+    }, [id, client]);
 
     useEffect(() => {
         loadHAR();
