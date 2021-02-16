@@ -25,7 +25,7 @@ jobs:
       run: dotnet build HARRepo.FileManager.API/HARRepo.FileManager.API.csproj --configuration Release
 
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API
+      run: dotnet publish HARRepo.FileManager.API/HARRepo.FileManager.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/FileManagerAPI
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
@@ -33,4 +33,4 @@ jobs:
         app-name: 'HARRepoFileManagerAPI'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_f1128cd15a5a47ccacb7a9f8ba15383f }}
-        package: ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API 
+        package: ${{env.DOTNET_ROOT}}/FileManagerAPI 
