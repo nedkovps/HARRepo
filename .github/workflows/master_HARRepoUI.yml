@@ -22,10 +22,10 @@ jobs:
         dotnet-version: '3.1.301'
 
     - name: Build with dotnet
-      run: dotnet build HARRepo.UI/HARRepo.Web.csproj --configuration Release
+      run: dotnet build HARRepo.Web/HARRepo.Web.csproj --configuration Release
 
     - name: dotnet publish
-      run: dotnet publish HARRepo.UI/HARRepo.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/HARRepoUI
+      run: dotnet publish HARRepo.Web/HARRepo.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/HARRepoUI
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
