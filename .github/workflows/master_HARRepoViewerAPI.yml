@@ -33,5 +33,5 @@ jobs:
       with:
         app-name: 'HARRepoViewerAPI'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_0dd401bd478d4aac84b38b174c95c9f1 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_6e2dad5e918d417fa85b74041df93303 }}
         package: \published\
