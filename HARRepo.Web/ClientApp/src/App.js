@@ -11,6 +11,7 @@ import AuthorizedRoute from './components/AuthorizedRoute';
 import Callback from './views/Callback';
 import AccessDenied from './views/AccessDenied';
 import NotFound from './views/NotFound';
+import Error from './views/Error';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -26,6 +27,7 @@ export default class App extends Component {
             <Route exact path='/callback' component={Callback} />
             <Route exact path='/AccessDenied' component={AccessDenied} />
             <Route exact path='/NotFound' component={NotFound} />
+            <Route exact path='/Error' component={Error} />
       </Layout>
     );
   }
