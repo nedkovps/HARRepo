@@ -34,24 +34,28 @@ loadSettings().then(() => {
     app.use(jwtCheck);
 
     app.get('/HAR', async (req, res) => {
+        try {
+            const account = process.env.StorageAccountName || settings.StorageAccountName;
+            const accountKey = process.env.StorageAccountKey || settings.StorageAccountKey;
 
-        const account = process.env.StorageAccountName || settings.StorageAccountName;
-        const accountKey = process.env.StorageAccountKey || settings.StorageAccountKey;
+            const credential = new StorageSharedKeyCredential(account, accountKey);
+            const client = new BlobServiceClient(process.env.BlobUrl || settings.BlobUrl, credential);
 
-        const credential = new StorageSharedKeyCredential(account, accountKey);
-        const client = new BlobServiceClient(process.env.BlobUrl || settings.BlobUrl, credential);
+            const containerName = process.env.BlobContainerName || settings.BlobContainerName;
+            const containerClient = client.getContainerClient(containerName);
 
-        const containerName = process.env.BlobContainerName || settings.BlobContainerName;
-        const containerClient = client.getContainerClient(containerName);
+            const blobClient = containerClient.getBlobClient(req.query.id);
+            const HARResponse = await blobClient.download(0);
+            const HARContent = (await streamToBuffer(HARResponse.readableStreamBody)).toString();
 
-        const blobClient = containerClient.getBlobClient(req.query.id);
-        const HARResponse = await blobClient.download(0);
-        const HARContent = (await streamToBuffer(HARResponse.readableStreamBody)).toString();
-
-        res.set({
-            'Content-Type': 'application/json'
-        });
-        res.send(HARContent);
+            res.set({
+                'Content-Type': 'application/json'
+            });
+            res.send(HARContent);
+        }
+        catch (error) {
+            res.send(error);
+        }
     });
 
     app.listen(port);
