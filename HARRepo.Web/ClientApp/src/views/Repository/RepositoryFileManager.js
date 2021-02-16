@@ -253,7 +253,7 @@ const RepositoryFileManager = props => {
                     <span>{node.label}</span>
                     <div className="btn-group float-right" role="group">
                         <ActionButton icon={faExternalLinkAlt} tooltip="View HAR" click={() => viewFile(node.key)} />
-                        {node.key !== root.id && <ActionButton icon={faTrash} tooltip="Delete File" click={() => confirmDeleteFile(node.key)} />}
+                        <ActionButton icon={faTrash} tooltip="Delete File" click={() => confirmDeleteFile(node.key)} />
                     </div>
                 </div>
             )

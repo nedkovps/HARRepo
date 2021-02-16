@@ -23,11 +23,10 @@ loadSettings().then(() => {
         secret: jwks.expressJwtSecret({
             cache: true,
             rateLimit: true,
-            jwksRequestsPerMinute: 5,
-            jwksUri: 'https://harrepo.eu.auth0.com/.well-known/jwks.json'
+            jwksUri: settings.TokenUrl
         }),
         audience: settings.HARRepoAPIAudience,
-        issuer: 'https://harrepo.eu.auth0.com/',
+        issuer: settings.TokenIssuer,
         algorithms: ['RS256']
     });
 
