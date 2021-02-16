@@ -22,7 +22,7 @@ jobs:
         dotnet-version: '3.1.301'
 
     - name: Build with dotnet
-      run: dotnet build ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API --configuration Release
+      run: dotnet build ${{env.DOTNET_ROOT}}/HARRepo.FileManager/HARRepo.FileManager.API --configuration Release
 
     - name: dotnet publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API
