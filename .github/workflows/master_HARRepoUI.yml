@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - HARRepoFileManagerAPI
+name: Build and deploy ASP.Net Core app to Azure Web App - HARRepoUI
 
 on:
   push:
@@ -22,15 +22,15 @@ jobs:
         dotnet-version: '3.1.301'
 
     - name: Build with dotnet
-      run: dotnet build HARRepo.FileManager.API/HARRepo.FileManager.API.csproj --configuration Release
+      run: dotnet build HARRepo.Web/HARRepo.Web.csproj --configuration Release
 
     - name: dotnet publish
-      run: dotnet publish HARRepo.FileManager.API/HARRepo.FileManager.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/FileManagerAPI
+      run: dotnet publish HARRepo.Web/HARRepo.Web.csproj -c Release -o ${{env.DOTNET_ROOT}}/HARRepoUI
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'HARRepoFileManagerAPI'
+        app-name: 'HARRepoUI'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_f1128cd15a5a47ccacb7a9f8ba15383f }}
-        package: ${{env.DOTNET_ROOT}}/FileManagerAPI 
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_bae88cfdf50c402eb0863f974442a322 }}
+        package: ${{env.DOTNET_ROOT}}/HARRepoUI 
