@@ -22,7 +22,7 @@ jobs:
         dotnet-version: '3.1.301'
 
     - name: Build with dotnet
-      run: dotnet build HARRepo.FileManager.API --configuration Release
+      run: dotnet build ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API --configuration Release
 
     - name: dotnet publish
       run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API
@@ -33,4 +33,4 @@ jobs:
         app-name: 'HARRepoFileManagerAPI'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_f1128cd15a5a47ccacb7a9f8ba15383f }}
-        package: ${{env.DOTNET_ROOT}}/myapp 
+        package: ${{env.DOTNET_ROOT}}/HARRepo.FileManager.API 
