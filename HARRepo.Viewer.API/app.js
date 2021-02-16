@@ -19,26 +19,35 @@ const loadSettings = async () => {
     settings = config.appSettings;
 }
 loadSettings().then(() => {
-    const jwtCheck = jwt({
-        secret: jwks.expressJwtSecret({
-            cache: true,
-            rateLimit: true,
-            jwksUri: settings.TokenUrl
-        }),
-        audience: settings.HARRepoAPIAudience,
-        issuer: settings.TokenIssuer,
-        algorithms: ['RS256']
-    });
+    let error = null;
+    try {
+        const jwtCheck = jwt({
+            secret: jwks.expressJwtSecret({
+                cache: true,
+                rateLimit: true,
+                jwksUri: settings.TokenUrl
+            }),
+            audience: settings.HARRepoAPIAudience,
+            issuer: settings.TokenIssuer,
+            algorithms: ['RS256']
+        });
 
-    var corsOptions = {
-        origin: settings.AllowedOrigin,
-        optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        var corsOptions = {
+            origin: settings.AllowedOrigin,
+            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+        }
+
+        app.use(cors(corsOptions));
+        app.use(jwtCheck);
+    }
+    catch (ex) {
+        error = ex;
     }
 
-    app.use(cors(corsOptions));
-    app.use(jwtCheck);
-
     app.get('/HAR', async (req, res) => {
+        if (error) {
+            res.send(error);
+        }
         try {
             const account = process.env.StorageAccountName || settings.StorageAccountName;
             const accountKey = process.env.StorageAccountKey || settings.StorageAccountKey;
