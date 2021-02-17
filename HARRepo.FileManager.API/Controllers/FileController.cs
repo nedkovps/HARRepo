@@ -1,4 +1,5 @@
 ﻿using HARRepo.FileManager.API.Models;
+using HARRepo.FileManager.API.Validators;
 using HARRepo.FileManager.Logic.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,16 @@ namespace HARRepo.FileManager.API.Controllers
         [HttpPost("files")]
         public async Task<ActionResult> UploadFile([FromBody]FileUploadModel model)
         {
-            var file = await _fileManager.UploadFileAsync(model.DirectoryId, model.Name, model.Content);
-            return Ok(file);
+            var validationResult = await new FileUploadValidator().ValidateAsync(model);
+            if (validationResult.IsValid)
+            {
+                var file = await _fileManager.UploadFileAsync(model.DirectoryId, model.Name, model.Content);
+                return Ok(file);
+            }
+            else
+            {
+                return BadRequest(validationResult.ToErrorDictionary());
+            }
         }
 
         [HttpDelete("files/{fileId}")]
@@ -62,10 +71,18 @@ namespace HARRepo.FileManager.API.Controllers
         [HttpPost("files/share")]
         public async Task<ActionResult> ShareFile([FromBody] FileShareModel model)
         {
-            var user = await _auth.GetUserByEmailAsync(model.UserEmail);
-            var currentUser = await _auth.GetCurrentUserAsync();
-            await _fileManager.ShareFileAsync(model.FileId, currentUser.Id, user.Id, model.Comment);
-            return Ok();
+            var validationResult = await new FileShareValidator().ValidateAsync(model);
+            if (validationResult.IsValid)
+            {
+                var user = await _auth.GetUserByEmailAsync(model.UserEmail);
+                var currentUser = await _auth.GetCurrentUserAsync();
+                await _fileManager.ShareFileAsync(model.FileId, currentUser.Id, user.Id, model.Comment);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(validationResult.ToErrorDictionary());
+            }
         }
 
         [HttpDelete("files/unshare/{sharedFileId}")]

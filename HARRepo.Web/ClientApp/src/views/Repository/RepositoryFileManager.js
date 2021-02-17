@@ -126,11 +126,21 @@ const RepositoryFileManager = props => {
             directoryId: folderParentId,
             content: content
         };
-        await client.uploadFile(uploadModel);
-        let expandedKeysCopy = { ...expandedKeys };
-        expandedKeysCopy[folderParentId] = true;
-        props.repoUpdated(expandedKeysCopy);
-        setIsInProcess(false);
+        try {
+            await client.uploadFile(uploadModel);
+            console.log('here');
+            let expandedKeysCopy = { ...expandedKeys };
+            expandedKeysCopy[folderParentId] = true;
+            props.repoUpdated(expandedKeysCopy);
+            setIsInProcess(false);
+        }
+        catch (error) {
+            console.log(error);
+            setErrors(err => {
+                return { ...err, form: error.name ? error.name : (error.directoryId ? error.directoryId : error.content) }
+            });
+            setIsInProcess(false);
+        }
     }
 
     const uploadHARHandler = e => {

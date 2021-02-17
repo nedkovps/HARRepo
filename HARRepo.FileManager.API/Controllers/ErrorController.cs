@@ -21,7 +21,7 @@ namespace HARRepo.FileManager.API.Controllers
 
             if (exception is NotFoundException) code = 404; // Not Found
             else if (exception is AccessDeniedException) code = 401; // Unauthorized
-            else if (exception is LogicException) code = 400; // Bad Request
+            else if (exception is LogicException) code = 417; // Expectation failed
 
             Response.StatusCode = code;
 

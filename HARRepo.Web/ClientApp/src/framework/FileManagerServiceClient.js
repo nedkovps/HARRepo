@@ -30,7 +30,7 @@ export class FileManagerServiceClient {
         await APIClient.deleteSafe(`${this.APIUrl}/directories/${id}`);
     }
 
-    static uploadFile = async file => {
+    static uploadFile = async (file) => {
         await APIClient.postSafe(`${this.APIUrl}/files`, JSON.stringify(file));
     }
 
