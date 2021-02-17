@@ -13,12 +13,14 @@ import FileActions from './FileActions';
 import FolderActions from './FolderActions';
 import { mapRoot } from '../../framework/FileManagerHelpers';
 import Loader from '../../components/Loader';
+import ErrorPanel from '../../components/ErrorPanel';
 
 const RepositoryFileManager = props => {
 
     const client = useFileManagerAPI();
     const [root, setRoot] = useState(props.root);
     const [isInProcess, setIsInProcess] = useState(false);
+    const [errors, setErrors] = useState({});
     const uploadHARRef = useRef(null);
 
     useEffect(() => {
@@ -110,6 +112,14 @@ const RepositoryFileManager = props => {
     }
 
     const uploadHAR = async (fileName, content) => {
+
+        const fileNameSplitByDot = fileName.split('.');
+        if (fileNameSplitByDot[fileNameSplitByDot.length] !== 'har') {
+            const errMessage = 'The selected file is not with .har extension.';
+            setErrors(err => { return { ...err, form: err.form ? err.form + '; ' + errMessage : errMessage }});
+            return;
+        }
+
         setIsInProcess(true);
         const uploadModel = {
             name: fileName,
@@ -220,7 +230,7 @@ const RepositoryFileManager = props => {
     }
 
     return !isInProcess ? <>
-        <input id='selectHAR' ref={uploadHARRef} hidden type="file" onChange={uploadHARHandler} />
+        <input id='selectHAR' accept=".har" ref={uploadHARRef} hidden type="file" onChange={uploadHARHandler} />
         <Panel position="bottom" visible={panel.isVisible} onHide={() => setPanel({ isVisible: false, type: '' })} style={{ height: 'auto' }}>
             {panel.type === 'newFolder' && <CreateFolderPanelContent create={createFolder} setPanel={setPanel} />}
             {panel.type === 'deleteFolder' && <DeleteFolderPanelContent id={panel.id} delete={deleteDirectory} setPanel={setPanel} />}
@@ -230,6 +240,7 @@ const RepositoryFileManager = props => {
         <ContextMenu model={menu} ref={menuRef} onHide={() => setSelectedNodeKey(null)} />
         <ContextMenu model={fileMenu} ref={fileMenuRef} onHide={() => setSelectedNodeKey(null)} />
         <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders. Alternatively the action buttons on the right can be used. Files can be moved around folders by drag and drop." />
+        {errors && errors.form && <ErrorPanel text={errors.form} />}
         <Tree className="mt-3 border-0 p-0" value={mappedRoot.tree} contextMenuSelectionKey={selectedNodeKey} nodeTemplate={nodeTemplate}
             onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)} dragdropScope="demo"
             onContextMenu={event => event.node.type === 'dir' ? menuRef.current.show(event.originalEvent) : fileMenuRef.current.show(event.originalEvent)}
