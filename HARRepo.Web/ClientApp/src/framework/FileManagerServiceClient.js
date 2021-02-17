@@ -59,4 +59,9 @@ export class FileManagerServiceClient {
     static unshareFile = async sharedFileId => {
         await APIClient.deleteSafe(`${this.APIUrl}/files/unshare/${sharedFileId}`);
     }
+
+    static getSharedWithUserFilesCount = async () => {
+        const count = await APIClient.getSafe(`${this.APIUrl}/users/current/files/sharedWith/count`);
+        return count;
+    }
 }

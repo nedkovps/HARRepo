@@ -17,5 +17,6 @@ namespace HARRepo.FileManager.Logic.Interfaces
         Task<List<SharedWithMeFileDTO>> GetFilesSharedWithUserAsync(int userId);
         Task ShareFileAsync(int fileId, int ownerId, int userId, string comment);
         Task UnshareFileAsync(int sharedFileId);
+        Task<int> GetSharedWithUserFilesCountAsync(int userId);
     }
 }

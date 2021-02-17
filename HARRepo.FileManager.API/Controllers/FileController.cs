@@ -74,5 +74,13 @@ namespace HARRepo.FileManager.API.Controllers
             await _fileManager.UnshareFileAsync(sharedFileId);
             return Ok();
         }
+
+        [HttpGet("users/current/files/sharedWith/count")]
+        public async Task<ActionResult> GetSharedWithUserFilesCountAsync()
+        {
+            var user = await _auth.GetCurrentUserAsync();
+            var sharedFilesCount = await _fileManager.GetSharedWithUserFilesCountAsync(user.Id);
+            return Ok(sharedFilesCount);
+        }
     }
 }

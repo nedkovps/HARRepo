@@ -143,5 +143,14 @@ namespace HARRepo.FileManager.Logic.Implementations
             _context.Remove(sharedFile);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> GetSharedWithUserFilesCountAsync(int userId)
+        {
+            var count = await _context.Set<SharedFile>()
+                .Where(x => x.SharedWithId == userId)
+                .CountAsync();
+
+            return count;
+        }
     }
 }
