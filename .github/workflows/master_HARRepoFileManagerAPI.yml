@@ -25,7 +25,7 @@ jobs:
       run: dotnet build HARRepo.FileManager.API/HARRepo.FileManager.API.csproj --configuration Release
       
     - name: Run Tests
-      run: dotnet test HARRepo.FileManager.API/HARRepo.FileManager.Logic.Tests.csproj --no-restore --no-build
+      run: dotnet test HARRepo.FileManager.Logic.Tests/HARRepo.FileManager.Logic.Tests.csproj --no-restore --no-build
 
     - name: dotnet publish
       run: dotnet publish HARRepo.FileManager.API/HARRepo.FileManager.API.csproj -c Release -o ${{env.DOTNET_ROOT}}/FileManagerAPI
