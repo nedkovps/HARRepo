@@ -33,7 +33,8 @@ const Collaboration = props => {
     const loadSharedFiles = useCallback(async () => {
         const sharedFilesData = await client.getSharedFiles();
         setSharedFiles({ isLoading: false, data: sharedFilesData });
-    }, [client, actionsCount]); // eslint-disable-line no-use-before-define
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [client, actionsCount]);
 
     useEffect(() => {
         loadFilesSharedWithUser();
