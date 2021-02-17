@@ -25,19 +25,32 @@
                 headers: this.getHeaders(),
                 body: data ? data : null
             });
-            const result = await response.json();
+            const result = await response.text();
+            let resultJSON = result ? JSON.parse(result) : {};
             if (response.status === 200) {
-                return result;
+                return resultJSON;
             }
             else if (response.status === 401) {
                 if (this.history) {
-                    this.history.push('/AccessDenied');
+                    this.history.push({
+                        pathname: '/AccessDenied',
+                        state: resultJSON
+                    });
                 }
             }
             else if (response.status === 404) {
                 if (this.history) {
-                    this.history.push('/NotFound');
+                    this.history.push({
+                        pathname: '/NotFound',
+                        state: resultJSON
+                    });
                 }
+            }
+            else if (response.status === 400) {
+                this.history.push({
+                    pathname: '/Error',
+                    state: resultJSON
+                });
             }
             else {
                 if (this.history) {

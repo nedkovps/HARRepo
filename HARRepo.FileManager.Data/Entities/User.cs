@@ -9,6 +9,7 @@ namespace HARRepo.FileManager.Data.Entities
         public User()
         {
             Repositories = new HashSet<Repository>();
+            SharedFilesWithUser = new HashSet<SharedFile>();
         }
 
         public string Name { get; set; }
@@ -16,5 +17,6 @@ namespace HARRepo.FileManager.Data.Entities
         public string Email { get; set; }
 
         public virtual ICollection<Repository> Repositories { get; private set; }
+        public virtual ICollection<SharedFile> SharedFilesWithUser { get; private set; }
     }
 }

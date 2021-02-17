@@ -2,18 +2,23 @@
 import { Tree } from 'primereact/tree';
 import { ContextMenu } from 'primereact/contextmenu';
 import { Sidebar as Panel } from 'primereact/sidebar';
-import PageHeader from '../../components/PageHeader';
-import Input from '../../components/Input';
 import { withRouter } from 'react-router-dom';
 import InfoPanel from '../../components/InfoPanel';
-import { ActionButton } from '../../components/ActionButton';
-import { faPlus, faTrash, faUpload, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import useFileManagerAPI from '../../framework/hooks/useFileManagerAPI';
+import CreateFolderPanelContent from './CreateFolderPanelContent';
+import DeleteFolderPanelContent from './DeleteFolderPanelContent';
+import DeleteFilePanelContent from './DeleteFilePanelContent';
+import ShareFilePanelContent from './ShareFilePanelContent';
+import FileActions from './FileActions';
+import FolderActions from './FolderActions';
+import { mapRoot } from '../../framework/FileManagerHelpers';
+import Loader from '../../components/Loader';
 
 const RepositoryFileManager = props => {
 
     const client = useFileManagerAPI();
     const [root, setRoot] = useState(props.root);
+    const [isInProcess, setIsInProcess] = useState(false);
     const uploadHARRef = useRef(null);
 
     useEffect(() => {
@@ -22,74 +27,10 @@ const RepositoryFileManager = props => {
         
     }, [props.root, props.expandedKeys]);
 
-    let filePaths = {};
-    const mapSubDirectories = subDirectories => {
-        return subDirectories.map(f => {
-
-            let subs = [];
-            if (f.subDirectories && f.subDirectories.length > 0) {
-                subs = mapSubDirectories(f.subDirectories);
-            }
-            let files = [];
-            if (f.files && f.files.length > 0) {
-                files = f.files.map(fl => {
-
-                    filePaths[fl.id] = fl.path;
-
-                    return {
-                        key: fl.id,
-                        label: fl.name,
-                        icon: 'pi pi-fw pi-file',
-                        type: 'file',
-                        draggable: true,
-                        droppable: false
-                    };
-                });
-            }
-
-            return {
-                key: f.id,
-                label: f.name,
-                icon: 'pi pi-fw pi-folder',
-                children: [...subs, ...files],
-                type: 'dir',
-                draggable: false,
-                droppable: true
-            };
-        });
-    }
-
-    const rootSubDirectories = mapSubDirectories(root.subDirectories);
-    let rootFiles = [];
-    if (root.files && root.files.length > 0) {
-        rootFiles = root.files.map(fl => {
-
-            filePaths[fl.id] = fl.path;
-
-            return {
-                key: fl.id,
-                label: fl.name,
-                icon: 'pi pi-fw pi-file',
-                type: 'file',
-                draggable: true,
-                droppable: false
-            };
-        });
-    }
-
-    const treeModel = [{
-        key: root.id,
-        label: root.name,
-        icon: 'pi pi-fw pi-folder',
-        children: [...rootSubDirectories, ...rootFiles],
-        type: 'dir',
-        draggable: false,
-        droppable: true
-    }];
+    const mappedRoot = mapRoot(root);
 
     const [panel, setPanel] = useState({ isVisible: false, type: '' });
     const [folderParentId, setFolderParentId] = useState(null);
-    const [folderName, setFolderName] = useState('');
     const [selectedNodeKey, setSelectedNodeKey] = useState(null);
     const [expandedKeys, setExpandedKeys] = useState({});
 
@@ -143,6 +84,13 @@ const RepositoryFileManager = props => {
             }
         },
         {
+            label: "Share",
+            icon: 'pi pi-share-alt',
+            command: () => {
+                initFileShare(selectedNodeKey);
+            }
+        },
+        {
             label: 'Delete File',
             icon: 'pi pi-trash',
             command: () => {
@@ -151,21 +99,18 @@ const RepositoryFileManager = props => {
         }
     ];
 
-    const folderNameChangeHandler = e => {
-        e.persist();
-        setFolderName(e.target.value);
-    }
-
-    const createFolder = async () => {
+    const createFolder = async folderName => {
+        setIsInProcess(true);
         await client.createFolder(folderParentId, folderName);
         setPanel({ isVisible: false, type: '' });
-        setFolderName('');
         let expandedKeysCopy = { ...expandedKeys };
         expandedKeysCopy[folderParentId] = true;
         props.repoUpdated(expandedKeysCopy);
+        setIsInProcess(false);
     }
 
     const uploadHAR = async (fileName, content) => {
+        setIsInProcess(true);
         const uploadModel = {
             name: fileName,
             directoryId: folderParentId,
@@ -175,6 +120,7 @@ const RepositoryFileManager = props => {
         let expandedKeysCopy = { ...expandedKeys };
         expandedKeysCopy[folderParentId] = true;
         props.repoUpdated(expandedKeysCopy);
+        setIsInProcess(false);
     }
 
     const uploadHARHandler = e => {
@@ -191,9 +137,11 @@ const RepositoryFileManager = props => {
     }
 
     const deleteDirectory = async id => {
+        setIsInProcess(true);
         await client.deleteDirectory(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
+        setIsInProcess(false);
     }
 
     const confirmDeleteFile = id => {
@@ -201,13 +149,28 @@ const RepositoryFileManager = props => {
     }
 
     const deleteFile = async id => {
+        setIsInProcess(true);
         await client.deleteFile(id);
         setPanel({ isVisible: false, type: '' });
         props.repoUpdated(expandedKeys);
+        setIsInProcess(false);
+    }
+
+    const initFileShare = id => {
+        setPanel({ isVisible: true, type: 'shareFile', id: id });
+    }
+
+    const shareFile = async (id, userEmail, comment) => {
+        await client.shareFile({
+            fileId: id,
+            userEmail: userEmail,
+            comment: comment
+        });
+        setPanel({ isVisible: false, type: '' });
     }
 
     const viewFile = id => {
-        props.history.push(`/ViewHAR/${filePaths[id]}`);
+        props.history.push(`/ViewHAR/${mappedRoot.filePaths[id]}`);
     }
 
     const findMovedFile = (original, modified) => {
@@ -230,7 +193,7 @@ const RepositoryFileManager = props => {
     }
 
     const moveFile = async updatedTree => {
-        const movedFile = findMovedFile(treeModel[0], updatedTree[0]);
+        const movedFile = findMovedFile(mappedRoot.tree[0], updatedTree[0]);
         await client.changeFileLocation(movedFile.fileId, movedFile.directoryId);
         props.repoUpdated(expandedKeys);
     }
@@ -248,72 +211,30 @@ const RepositoryFileManager = props => {
 
     const nodeTemplate = (node) => {
         if (node.type === 'file') {
-            return (
-                <div className="w-100">
-                    <span>{node.label}</span>
-                    <div className="btn-group float-right" role="group">
-                        <ActionButton icon={faExternalLinkAlt} tooltip="View HAR" click={() => viewFile(node.key)} />
-                        <ActionButton icon={faTrash} tooltip="Delete File" click={() => confirmDeleteFile(node.key)} />
-                    </div>
-                </div>
-            )
+            return <FileActions id={node.key} name={node.label} view={viewFile} initShare={initFileShare} confirmDelete={confirmDeleteFile} />
         }
         else {
-            return (
-                <div className="w-100">
-                    <span className="noselect" onDoubleClick={() => expandOrCondenseFolder(node.key)}>{node.label}</span>
-                    <div className="btn-group float-right" role="group">
-                        <ActionButton icon={faUpload} tooltip="Upload HAR" click={() => uploadHARCommand(node.key)} />
-                        <ActionButton icon={faPlus} tooltip="New Folder" click={() => newFolderCommand(node.key)} />
-                        {node.key !== root.id && <ActionButton icon={faTrash} tooltip="Delete Folder" click={() => deleteFolderCommand(node.key)} />}
-                    </div>
-                </div>
-            )
+            return <FolderActions id={node.key} name={node.label} isRoot={node.key === root.id} uploadHAR={uploadHARCommand}
+                createNew={newFolderCommand} deleteFolder={deleteFolderCommand} expandOrCondense={expandOrCondenseFolder} />
         }
     }
 
-    return <>
+    return !isInProcess ? <>
         <input id='selectHAR' ref={uploadHARRef} hidden type="file" onChange={uploadHARHandler} />
         <Panel position="bottom" visible={panel.isVisible} onHide={() => setPanel({ isVisible: false, type: '' })} style={{ height: 'auto' }}>
-            {panel.type === 'newFolder' && <>
-                <PageHeader title="Create New Folder" />
-                <div>
-                    <Input label="Name" value={folderName} change={folderNameChangeHandler} />
-                </div>
-                <div className="d-block" style={{ height: '50px' }}>
-                    <button className="btn btn-primary float-right ml-1" onClick={createFolder}>Create</button>
-                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
-                </div>
-            </>}
-            {panel.type === 'deleteFolder' && <>
-                <PageHeader title="Delete Folder" />
-                <p>
-                    Are you sure you want to delete the folder?
-                </p>
-                <div className="d-block" style={{ height: '50px' }}>
-                    <button className="btn btn-danger float-right ml-1" onClick={() => deleteDirectory(panel.id)}>Delete</button>
-                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
-                </div>
-            </>}
-            {panel.type === 'deleteFile' && <>
-                <PageHeader title="Delete File" />
-                <p>
-                    Are you sure you want to delete the file?
-                </p>
-                <div className="d-block" style={{ height: '50px' }}>
-                    <button className="btn btn-danger float-right ml-1" onClick={() => deleteFile(panel.id)}>Delete</button>
-                    <button className="btn btn-secondary float-right" onClick={() => setPanel({ isVisible: false, type: '' })}>Cancel</button>
-                </div>
-            </>}
+            {panel.type === 'newFolder' && <CreateFolderPanelContent create={createFolder} setPanel={setPanel} />}
+            {panel.type === 'deleteFolder' && <DeleteFolderPanelContent id={panel.id} delete={deleteDirectory} setPanel={setPanel} />}
+            {panel.type === 'deleteFile' && <DeleteFilePanelContent id={panel.id} delete={deleteFile} setPanel={setPanel} />}
+            {panel.type === 'shareFile' && <ShareFilePanelContent id={panel.id} share={shareFile} setPanel={setPanel} />}
         </Panel>
         <ContextMenu model={menu} ref={menuRef} onHide={() => setSelectedNodeKey(null)} />
         <ContextMenu model={fileMenu} ref={fileMenuRef} onHide={() => setSelectedNodeKey(null)} />
         <InfoPanel text="Right click on a folder or file and use the context menu to manage your repo files and folders. Alternatively the action buttons on the right can be used. Files can be moved around folders by drag and drop." />
-        <Tree className="mt-3 border-0 p-0" value={treeModel} contextMenuSelectionKey={selectedNodeKey} nodeTemplate={nodeTemplate}
+        <Tree className="mt-3 border-0 p-0" value={mappedRoot.tree} contextMenuSelectionKey={selectedNodeKey} nodeTemplate={nodeTemplate}
             onContextMenuSelectionChange={event => setSelectedNodeKey(event.value)} dragdropScope="demo"
             onContextMenu={event => event.node.type === 'dir' ? menuRef.current.show(event.originalEvent) : fileMenuRef.current.show(event.originalEvent)}
             expandedKeys={expandedKeys} onToggle={e => setExpandedKeys(e.value)} onDragDrop={event => moveFile(event.value)} />
-    </>;
+    </> : <Loader />;
 }
 
 export default React.memo(withRouter(RepositoryFileManager));

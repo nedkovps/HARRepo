@@ -29,6 +29,10 @@ namespace HARRepo.FileManager.Data.Configurations
             builder.HasMany(x => x.Repositories)
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId);
+
+            builder.HasMany(x => x.SharedFilesWithUser)
+                .WithOne(x => x.SharedWith)
+                .HasForeignKey(x => x.SharedWithId);
         }
     }
 }

@@ -9,5 +9,6 @@ namespace HARRepo.FileManager.Logic.Interfaces
     public interface IAuthorizationManager
     {
         Task<UserDTO> GetCurrentUserAsync();
+        Task<UserDTO> GetUserByEmailAsync(string email);
     }
 }

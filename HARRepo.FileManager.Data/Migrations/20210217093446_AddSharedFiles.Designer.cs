@@ -4,14 +4,16 @@ using HARRepo.FileManager.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HARRepo.FileManager.Data.Migrations
 {
     [DbContext(typeof(HARRepoFileManagerContext))]
-    partial class HARRepoFileManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20210217093446_AddSharedFiles")]
+    partial class AddSharedFiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,12 +121,11 @@ namespace HARRepo.FileManager.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FileId");
+
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("SharedWithId");
-
-                    b.HasIndex("FileId", "OwnerId", "SharedWithId")
-                        .IsUnique();
 
                     b.ToTable("SharedFiles");
                 });
@@ -208,7 +209,7 @@ namespace HARRepo.FileManager.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("HARRepo.FileManager.Data.Entities.User", "SharedWith")
-                        .WithMany("SharedFilesWithUser")
+                        .WithMany()
                         .HasForeignKey("SharedWithId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -230,8 +231,6 @@ namespace HARRepo.FileManager.Data.Migrations
             modelBuilder.Entity("HARRepo.FileManager.Data.Entities.User", b =>
                 {
                     b.Navigation("Repositories");
-
-                    b.Navigation("SharedFilesWithUser");
                 });
 #pragma warning restore 612, 618
         }

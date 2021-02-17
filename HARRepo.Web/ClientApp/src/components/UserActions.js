@@ -21,7 +21,8 @@ const UserActions = props => {
     let menuItems = [
         {
             label: 'Options',
-            items: [{ label: 'My Repos', icon: 'pi pi-fw pi-bars', command: () => props.history.push('/') }]
+            items: [{ label: 'My Repos', icon: 'pi pi-fw pi-bars', command: () => props.history.push('/') },
+                { label: 'Collaboration', icon: 'pi pi-fw pi-users', command: () => props.history.push('/Collaboration') }]
         },
         {
             label: 'Account',

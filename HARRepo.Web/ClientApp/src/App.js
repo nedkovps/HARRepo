@@ -12,6 +12,7 @@ import Callback from './views/Callback';
 import AccessDenied from './views/AccessDenied';
 import NotFound from './views/NotFound';
 import Error from './views/Error';
+import Collaboration from './views/Collaboration/Collaboration';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -24,6 +25,7 @@ export default class App extends Component {
             <AuthorizedRoute path='/Repos/:id' component={Repository} />
             <AuthorizedRoute path='/DeleteRepo/:id' component={DeleteRepo} />
             <AuthorizedRoute path='/ViewHAR/:id' component={HARViewer} />
+            <AuthorizedRoute path='/Collaboration' component={Collaboration} />
             <Route exact path='/callback' component={Callback} />
             <Route exact path='/AccessDenied' component={AccessDenied} />
             <Route exact path='/NotFound' component={NotFound} />

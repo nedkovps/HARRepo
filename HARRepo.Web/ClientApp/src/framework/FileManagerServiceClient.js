@@ -41,4 +41,22 @@ export class FileManagerServiceClient {
     static deleteFile = async id => {
         await APIClient.deleteSafe(`${this.APIUrl}/files/${id}`);
     }
+
+    static getSharedFiles = async () => {
+        const files = await APIClient.getSafe(`${this.APIUrl}/users/current/files/shared`);
+        return files;
+    }
+
+    static getFilesSharedWithUser = async () => {
+        const files = await APIClient.getSafe(`${this.APIUrl}/users/current/files/sharedWith`);
+        return files;
+    }
+
+    static shareFile = async sharedFile => {
+        await APIClient.postSafe(`${this.APIUrl}/files/share`, JSON.stringify(sharedFile));
+    }
+
+    static unshareFile = async sharedFileId => {
+        await APIClient.deleteSafe(`${this.APIUrl}/files/unshare/${sharedFileId}`);
+    }
 }

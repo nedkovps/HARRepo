@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HARRepo.FileManager.Data.Entities;
 using HARRepo.FileManager.Logic.DTOs;
+using HARRepo.FileManager.Logic.Exceptions;
 using HARRepo.FileManager.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,6 +50,17 @@ namespace HARRepo.FileManager.Logic.Implementations
             }
 
             return null;
+        }
+
+        public async Task<UserDTO> GetUserByEmailAsync(string email)
+        {
+            var user = await _context.Set<User>()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == email.ToLower());
+            if (user == null)
+            {
+                throw new NotFoundException("User with specified email has not been found.");
+            }
+            return _mapper.Map<UserDTO>(user);
         }
     }
 }

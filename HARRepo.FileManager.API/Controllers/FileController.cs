@@ -14,10 +14,12 @@ namespace HARRepo.FileManager.API.Controllers
     public class FileController : Controller
     {
         private readonly IFileManager _fileManager;
+        private readonly IAuthorizationManager _auth;
 
-        public FileController(IFileManager fileManagerLogic)
+        public FileController(IFileManager fileManagerLogic, IAuthorizationManager authorization)
         {
             _fileManager = fileManagerLogic;
+            _auth = authorization;
         }
 
         [HttpPut("files/{fileId}/directory/{directoryId}")]
@@ -38,6 +40,38 @@ namespace HARRepo.FileManager.API.Controllers
         public async Task<ActionResult> DeleteFileAsync(int fileId)
         {
             await _fileManager.DeleteFileAsync(fileId);
+            return Ok();
+        }
+
+        [HttpGet("users/current/files/shared")]
+        public async Task<ActionResult> GetUserSharedFiles()
+        {
+            var user = await _auth.GetCurrentUserAsync();
+            var files = await _fileManager.GetUserSharedFilesAsync(user.Id);
+            return Ok(files);
+        }
+
+        [HttpGet("users/current/files/sharedWith")]
+        public async Task<ActionResult> GetFilesSharedWithUser()
+        {
+            var user = await _auth.GetCurrentUserAsync();
+            var files = await _fileManager.GetFilesSharedWithUserAsync(user.Id);
+            return Ok(files);
+        }
+
+        [HttpPost("files/share")]
+        public async Task<ActionResult> ShareFile([FromBody] FileShareModel model)
+        {
+            var user = await _auth.GetUserByEmailAsync(model.UserEmail);
+            var currentUser = await _auth.GetCurrentUserAsync();
+            await _fileManager.ShareFileAsync(model.FileId, currentUser.Id, user.Id, model.Comment);
+            return Ok();
+        }
+
+        [HttpDelete("files/unshare/{sharedFileId}")]
+        public async Task<ActionResult> UnshareFile(int sharedFileId)
+        {
+            await _fileManager.UnshareFileAsync(sharedFileId);
             return Ok();
         }
     }
