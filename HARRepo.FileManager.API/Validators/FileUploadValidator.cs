@@ -20,7 +20,7 @@ namespace HARRepo.FileManager.API.Validators
                 .Cascade(CascadeMode.Stop)
                 .NotNull()
                 .NotEmpty()
-                .Matches(@"^(?:[\w]\:|\\)(\\[a-z_\-\s0-9\.]+)+\.har$")
+                .Matches(@"^(.+\.har$")
                 .WithMessage("File is not with the correct extension.");
 
             RuleFor(x => x.Content)
