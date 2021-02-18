@@ -114,7 +114,7 @@ const RepositoryFileManager = props => {
     const uploadHAR = async (fileName, content) => {
 
         const fileNameSplitByDot = fileName.split('.');
-        if (fileNameSplitByDot[fileNameSplitByDot.length] !== 'har') {
+        if (fileNameSplitByDot[fileNameSplitByDot.length - 1] !== 'har') {
             const errMessage = 'The selected file is not with .har extension.';
             setErrors(err => { return { ...err, form: err.form ? err.form + '; ' + errMessage : errMessage }});
             return;
